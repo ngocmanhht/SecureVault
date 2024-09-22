@@ -8,6 +8,7 @@ import Vault from '../../../screens/authenticated/vault';
 import Update from '../../../screens/authenticated/update';
 import Security from '../../../screens/authenticated/security';
 import { sizeWidth } from '../../../assets/styles';
+import { VaultStackNavigator } from '../vault-stack';
 
 const Tab = createBottomTabNavigator();
 
@@ -41,9 +42,10 @@ const BottomTabs = () => {
           tabBarIcon: ({ focused }) => (
             <Icon source={focused ? Icons.ActiveVault : Icons.Vault} />
           ),
+          headerShown: false,
         }}
-        name={Screens.Vault}
-        component={Vault}
+        name={Screens.VaultStackNavigator}
+        component={VaultStackNavigator}
       />
       <Tab.Screen
         options={{

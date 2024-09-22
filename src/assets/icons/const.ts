@@ -7,4 +7,9 @@ export const Icons = {
   ActiveSecurity: require('./active-security.png'),
   ActiveDiamond: require('./active-diamond.png'),
   ActiveSetting: require('./active-setting.png'),
+  Hide: require('./hidden.png'),
+  UnHide: require('./unhidden.png'),
+  Logo: require('./logo.png'),
+  Mail: require('./mail.png'),
+  Lock: require('./lock.png'),
 };

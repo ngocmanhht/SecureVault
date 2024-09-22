@@ -10,5 +10,6 @@ module.exports = {
     'react/no-unstable-nested-components': 'off',
     'react-hooks/exhaustive-deps': 'warn',
     '@tanstack/query/exhaustive-deps': 'warn',
+    'react/react-in-jsx-scope': 'off',
   },
 };

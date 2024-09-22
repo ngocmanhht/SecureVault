@@ -6,4 +6,10 @@ export enum Screens {
   Update = 'Update',
   Authentication = 'Authentication',
   Authenticated = 'Authenticated',
+  Walkthrough = 'Walkthrough',
+  Login = 'Login',
+  Register = 'Register',
+  VaultStackNavigator = 'VaultStackNavigator',
+  AddNewItem = 'AddNewItem',
+  Add = 'Add',
 }

@@ -12,3 +12,6 @@ export const FontSizes = {
   header: 19,
   content: 15,
 };
+
+export const DefaultPadding = 15;
+export const DefaultBorderRadius = 10;
