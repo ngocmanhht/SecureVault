@@ -80,5 +80,13 @@
 			</array>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Enabling Face ID allows you quick and secure access to your account.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Enabling Select image/video from photos</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Enabling Capture Image</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone</string>
 </dict>
 </plist>

@@ -13,6 +13,7 @@ import { AddPassword } from './add-password';
 import { AddBankAccount } from './add-bank-account';
 import { AddNote } from './add-note';
 import { Colors, Padding } from '../../../assets/styles';
+import { AddContact } from './add-contact';
 export const AddScreen = () => {
   const navigtion = useNavigation();
 
@@ -46,7 +47,7 @@ export const AddScreen = () => {
       case NoteType.BankAccount:
         return <AddBankAccount />;
       case NoteType.Contact:
-        return <AddBankAccount />;
+        return <AddContact />;
       case NoteType.Note:
         return <AddNote />;
       default:

@@ -10,10 +10,10 @@ import { Platform, NativeModules } from 'react-native';
 import 'react-native-gesture-handler';
 
 
-// if (__DEV__) {
-//   require('./ReactotronConfig');
-// }
-if (__DEV__ && Platform.OS === 'ios') {
-  NativeModules.DevSettings.setIsDebuggingRemotely(true);
+if (__DEV__) {
+  require('./ReactotronConfig');
 }
+// if (__DEV__ && Platform.OS === 'ios') {
+//   NativeModules.DevSettings.setIsDebuggingRemotely(true);
+// }
 AppRegistry.registerComponent(appName, () => App);

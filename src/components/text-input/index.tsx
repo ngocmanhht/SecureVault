@@ -24,6 +24,7 @@ export const CustomTextInput = ({
   onBlur,
   containerStyle,
   multiline = false,
+  editable = true,
 }: {
   multiline?: boolean;
   isPassword?: boolean;
@@ -34,6 +35,7 @@ export const CustomTextInput = ({
   value?: string;
   onBlur?: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void;
   containerStyle?: StyleProp<ViewStyle>;
+  editable?: boolean;
 }) => {
   const [hide, setHide] = useState(false);
   return (
@@ -70,10 +72,12 @@ export const CustomTextInput = ({
         multiline={multiline}
         style={{
           flex: 1,
-          paddingVertical: 5,
-          fontSize: FontSizes.lg,
+          paddingVertical: 10,
+          fontSize: FontSizes.sm,
           marginLeft: 5,
+          fontFamily: 'Inter-Regular',
         }}
+        editable={editable}
         value={value}
         onChangeText={e => onTextChange(e)}
         placeholder={placeholder}

@@ -24,10 +24,13 @@ import useStores from '../../../hooks/use-stores';
 import { useEffect } from 'react';
 import useCustomToast from '../../../hooks/use-toast';
 import { observer } from 'mobx-react';
+import UIStore from '../../../stores/ui';
 
 export const Login = observer(() => {
   const navigation = useNavigation();
   const sessionStore: SessionStore = useStores().sessionStore;
+  const uiStore: UIStore = useStores().uiStore;
+
   const toast = useCustomToast();
   const { handleSubmit, control } = useForm({
     defaultValues: {
@@ -36,10 +39,12 @@ export const Login = observer(() => {
     },
   });
   const signInWithEmail = async (email: string, password: string) => {
+    uiStore.showLoading();
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
+    uiStore.hideLoading();
     if (data.user && data.session) {
       console.log('data', data);
       navigation.navigate(Screens.Authenticated as never);

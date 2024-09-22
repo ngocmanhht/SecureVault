@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
 import { Dropdown } from 'react-native-element-dropdown';
-import { Divider, Icon, Portal, Switch, TextInput } from 'react-native-paper';
+import { Divider, Icon, Switch } from 'react-native-paper';
 import { appStyles, Colors, FontSizes } from '../../../assets/styles';
 import { Text } from '../../../components/text';
 import { CustomTextInput } from '../../../components/text-input';

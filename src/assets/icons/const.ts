@@ -12,4 +12,10 @@ export const Icons = {
   Logo: require('./logo.png'),
   Mail: require('./mail.png'),
   Lock: require('./lock.png'),
+  EmptyAll: require('./empty-all.png'),
+  EmptyContacts: require('./empty-contacts.png'),
+  EmptyCreditCard: require('./empty-credit-card.png'),
+  EmptyNote: require('./empty-note.png'),
+  EmptyPassword: require('./empty-password.png'),
+  Generate: require('./generate.png'),
 };

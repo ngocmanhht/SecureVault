@@ -164,34 +164,6 @@ export const AddNewItem = () => {
             )}
           />
         </View>
-
-        <View style={[{ padding: 10, marginTop: 10 }, appStyles.shadowStyle]}>
-          <FlatList
-            data={thirdCategory}
-            scrollEnabled={false}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={{
-                  flexDirection: 'row',
-                  paddingVertical: 10,
-                  alignItems: 'center',
-                  gap: 15,
-                }}>
-                <Icon color={Colors.gray500} size={20} source={item.icon} />
-                <View
-                  style={{
-                    flex: 1,
-                    gap: 5,
-                    justifyContent: 'center',
-                    alignContent: 'center',
-                  }}>
-                  <Text style={{}}>{item.name}</Text>
-                  <Divider />
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
       </ScrollView>
     </SafeAreaView>
   );

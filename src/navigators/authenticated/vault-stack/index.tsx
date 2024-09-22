@@ -29,8 +29,8 @@ export const VaultStackNavigator = () => {
           headerMode: 'screen',
           animationTypeForReplace: 'pop',
           headerShown: true,
-          headerBackTitle: 'Cancel',
-          headerTitle: 'Add Item',
+          headerBackTitle: 'Hủy',
+          headerTitle: 'Thêm note',
           headerBackTitleStyle: {
             fontSize: FontSizes.content,
           },
@@ -43,8 +43,8 @@ export const VaultStackNavigator = () => {
           headerMode: 'screen',
           animationTypeForReplace: 'pop',
           headerShown: true,
-          headerBackTitle: 'Cancel',
-          headerTitle: 'Add Item',
+          headerBackTitle: 'Hủy',
+          headerTitle: 'Thêm ',
           headerBackTitleStyle: {
             fontSize: FontSizes.content,
           },

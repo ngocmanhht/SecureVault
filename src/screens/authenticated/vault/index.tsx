@@ -1,12 +1,13 @@
 import {
   FlatList,
+  Image,
   SafeAreaView,
   SectionList,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Text } from '../../../components/text';
 import { useSupabase } from '../../../hooks/use-supabase';
 import { TableName } from '../../../type/table';
@@ -16,6 +17,8 @@ import { Colors, FontSizes } from '../../../assets/styles';
 import { Chip, Icon, Searchbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { Screens } from '../../../const';
+import { images } from '../../../assets/images';
+import { Icons } from '../../../assets/icons/const';
 
 export const category = [
   {
@@ -49,6 +52,53 @@ const Vault = () => {
   const [tabIndex, setTabIndex] = useState(1);
   const navigation = useNavigation();
 
+  const emptyData = useMemo(() => {
+    switch (tabIndex) {
+      case 1:
+        return {
+          imageSource: Icons.EmptyAll,
+          header: 'Thêm kho đầu tiên của bạn',
+          content:
+            'Nhấn vào + Mới ở trên. Điền vào kho của bạn. Bảo mật cuộc sống kỹ thuật số của bạn.',
+        };
+      case 2:
+        return {
+          imageSource: Icons.EmptyPassword,
+          header: 'Thêm mật khẩu',
+          content:
+            'Thêm mật khẩu bạn cần để truy cập các trang web, ứng dụng và dịch vụ yêu thích của bạn.',
+        };
+      case 3:
+        return {
+          imageSource: Icons.EmptyNote,
+          header: 'Thêm ghi chú bảo mật',
+          content:
+            'Lưu trữ bất kỳ thông tin nào bạn cần để giữ an toàn và có thể truy cập được, bao gồm các tệp đính kèm và bản ghi âm giọng nói.',
+        };
+      case 4:
+        return {
+          imageSource: Icons.EmptyContacts,
+          header: 'Thêm thông tin liên lạc',
+          content:
+            'Lưu địa chỉ và thông tin liên quan để bạn có thể điền vào biểu mẫu bằng một lần nhấn.',
+        };
+      case 5:
+        return {
+          imageSource: Icons.EmptyCreditCard,
+          header: 'Thêm thẻ thanh toán',
+          content:
+            'SecureVault là cách an toàn để lưu và điền thẻ tín dụng và thông tin thanh toán khác, bao gồm ngày hết hạn và CVC.',
+        };
+
+      default:
+        return {
+          imageSource: Icons.EmptyAll,
+          header: '',
+          content: '',
+        };
+    }
+  }, [tabIndex]);
+
   const onAddNewPress = () => {
     navigation.navigate(Screens.AddNewItem as never);
   };
@@ -59,12 +109,13 @@ const Vault = () => {
           backgroundColor: Colors.white,
           flex: 1,
           justifyContent: 'center',
+          padding: Padding.screen,
+          gap: 15,
         }}>
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            padding: Padding.screen,
           }}>
           <Text
             style={{
@@ -106,7 +157,7 @@ const Vault = () => {
             </Text>
           </TouchableOpacity>
         </View>
-        <View style={{ padding: Padding.screen }}>
+        <View style={{ marginTop: 10 }}>
           <Searchbar
             style={{
               height: 40,
@@ -122,6 +173,37 @@ const Vault = () => {
           />
         </View>
 
+        <FlatList
+          data={category}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            gap: 5,
+            maxHeight: 40,
+          }}
+          style={{ maxHeight: 40 }}
+          renderItem={({ item }) => (
+            <View style={{ maxWidth: 200, padding: 5 }}>
+              <Chip
+                style={[
+                  { backgroundColor: Colors.white },
+                  tabIndex === item.id ? styles.shadowStyle : {},
+                ]}
+                icon={item.icon}
+                theme={{
+                  colors: {
+                    primary: Colors.gray500,
+                  },
+                }}
+                onPress={() => {
+                  console.log('Pressed');
+                  setTabIndex(item.id);
+                }}>
+                {item.name}
+              </Chip>
+            </View>
+          )}
+          horizontal
+        />
         <View
           style={{
             flex: 1,
@@ -130,37 +212,45 @@ const Vault = () => {
             alignItems: 'center',
             padding: Padding.screen,
           }}>
-          <FlatList
-            data={category}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              gap: 5,
-              maxHeight: 40,
-            }}
-            renderItem={({ item }) => (
-              <View style={{ maxWidth: 200, padding: 5 }}>
-                <Chip
-                  style={[
-                    { backgroundColor: Colors.white },
-                    tabIndex === item.id ? styles.shadowStyle : {},
-                  ]}
-                  icon={item.icon}
-                  theme={{
-                    colors: {
-                      primary: Colors.gray500,
-                    },
-                  }}
-                  onPress={() => {
-                    console.log('Pressed');
-                    setTabIndex(item.id);
-                  }}>
-                  {item.name}
-                </Chip>
-              </View>
-            )}
-            horizontal
-          />
-          <FlatList
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignContent: 'center',
+              alignItems: 'center',
+              padding: Padding.screen,
+              gap: 20,
+            }}>
+            <Image
+              style={{ width: 200, height: undefined, aspectRatio: 1 }}
+              resizeMode='contain'
+              source={emptyData.imageSource}
+            />
+            <View
+              style={{
+                gap: 5,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: FontSizes.header,
+                }}>
+                {emptyData.header}
+              </Text>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  fontSize: FontSizes.md,
+                  color: Colors.gray500,
+                }}>
+                {emptyData.content}
+              </Text>
+            </View>
+          </View>
+
+          {/* <FlatList
             data={data}
             contentContainerStyle={{ flex: 1 }}
             renderItem={({ item }) => <Text>{item?.created_at}</Text>}
@@ -168,7 +258,7 @@ const Vault = () => {
               isLoading ? <Text>Loading</Text> : <Text>Empty</Text>
             }
             style={{ borderWidth: 1, flex: 1 }}
-          />
+          /> */}
         </View>
       </View>
     </SafeAreaView>

@@ -12,4 +12,7 @@ export enum Screens {
   VaultStackNavigator = 'VaultStackNavigator',
   AddNewItem = 'AddNewItem',
   Add = 'Add',
+  SecurityStackNavigator = 'SecurityStackNavigator',
+  GeneratePassword = 'GeneratePassword',
+  PasswordHistory = 'PasswordHistory',
 }

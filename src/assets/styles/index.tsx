@@ -13,7 +13,7 @@ const shadowStyle = {
   shadowRadius: 4.59,
   elevation: 5,
   backgroundColor: 'white',
-  borderRadius: 10,
+  borderRadius: 8,
 };
 export const appStyles = {
   shadowStyle,
