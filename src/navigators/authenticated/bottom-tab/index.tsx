@@ -10,6 +10,7 @@ import Security from '../../../screens/authenticated/security';
 import { sizeWidth } from '../../../assets/styles';
 import { VaultStackNavigator } from '../vault-stack';
 import { SecurityStackNavigator } from '../security-stack';
+import { SettingStackNavigator } from '../setting-stack';
 
 const Tab = createBottomTabNavigator();
 
@@ -73,14 +74,15 @@ const BottomTabs = () => {
       />
       <Tab.Screen
         options={{
+          headerShown: false,
           tabBarLabel: 'Cài đặt',
           tabBarIcon: ({ focused }) => (
             <Icon source={focused ? Icons.ActiveSetting : Icons.Setting} />
           ),
           headerTitle: 'Cài đặt',
         }}
-        name={Screens.Settings}
-        component={Settings}
+        name={Screens.SettingsStackNavigator}
+        component={SettingStackNavigator}
       />
     </Tab.Navigator>
   );

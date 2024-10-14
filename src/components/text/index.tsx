@@ -7,6 +7,7 @@ export const Text = (props: TextProps) => {
   const { fontWeight } = StyleSheet.flatten(props.style || {});
   return (
     <RNText
+      {...props}
       style={[
         {
           fontFamily: fontWeight === 'bold' ? 'Inter-Bold' : 'Inter-Regular',

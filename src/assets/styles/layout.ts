@@ -3,7 +3,7 @@ import { TextStyle, ViewStyle } from 'react-native';
 import { Colors } from './colors';
 
 export const Padding = {
-  screen: 10,
+  screen: 15,
 };
 
 export const shadowStyle: ViewStyle = {

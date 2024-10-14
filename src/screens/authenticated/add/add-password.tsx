@@ -8,17 +8,21 @@ import { CustomTextInput } from '../../../components/text-input';
 import { LongButton } from '../../../components/long-button';
 import { useNavigation } from '@react-navigation/native';
 import { Screens } from '../../../const';
+import { IPassword } from '../../../type/password';
+import { supabaseService } from '../../../supabase';
+import { useMutation } from '@tanstack/react-query';
+import useCustomToast from '../../../hooks/use-toast';
 export const AddPassword = () => {
   const data = [
-    { label: 'Facebook', value: '1', icon: 'facebook' },
-    { label: 'Google', value: '2', icon: 'google' },
-    { label: 'Twitter', value: '3', icon: 'twitter' },
-    { label: 'Instagram', value: '4', icon: 'instagram' },
-    { label: 'Linkedin', value: '5', icon: 'linkedin' },
-    { label: 'Github', value: '6', icon: 'github' },
-    { label: 'Gitlab', value: '7', icon: 'gitlab' },
-    { label: 'Jira', value: '8', icon: 'jira' },
-    { label: 'Other', value: '9', icon: 'note-text' },
+    { label: 'Facebook', value: 'Facebook', icon: 'facebook' },
+    { label: 'Google', value: 'Google', icon: 'google' },
+    { label: 'Twitter', value: 'Twitter', icon: 'twitter' },
+    { label: 'Instagram', value: 'Instagram', icon: 'instagram' },
+    { label: 'Linkedin', value: 'Linkedin', icon: 'linkedin' },
+    { label: 'Github', value: 'Github', icon: 'github' },
+    { label: 'Gitlab', value: 'Gitlab', icon: 'gitlab' },
+    { label: 'Jira', value: 'Jira', icon: 'jira' },
+    { label: 'Other', value: 'Other', icon: 'note-text' },
   ];
   const navigation = useNavigation();
   const [value, setValue] = useState<string | null>(null);
@@ -58,6 +62,30 @@ export const AddPassword = () => {
       );
     }
     return null;
+  };
+  const toast = useCustomToast();
+  const addPasswordMutation = useMutation({
+    mutationFn: (data: IPassword) =>
+      supabaseService.createNewPasswordNote(data),
+    onSuccess: () => {
+      toast.show({
+        type: 'success',
+        title: 'Tạo thành công',
+        content: '',
+      });
+      navigation.navigate(Screens.Vault as never);
+    },
+  });
+  const onSavePress = async () => {
+    const uid = await supabaseService.getUid();
+    const test: IPassword = {
+      type_account: 'Facebook',
+      password: 'ngocda2',
+      url: 'hahahsda112',
+      user_name: 'ngocda2',
+      user_id: uid,
+    };
+    addPasswordMutation.mutate(test);
   };
   return (
     <View style={{ gap: 20 }}>
@@ -243,10 +271,7 @@ export const AddPassword = () => {
           buttonColor={Colors.primary}
           textColor={Colors.white}
           title='Lưu'
-          onPress={() => {
-            console.log(12221);
-            navigation.navigate(Screens.Vault as never);
-          }}
+          onPress={onSavePress}
           buttonStyle={{
             width: '100%',
           }}

@@ -47,6 +47,7 @@ export const Login = observer(() => {
     uiStore.hideLoading();
     if (data.user && data.session) {
       console.log('data', data);
+
       navigation.navigate(Screens.Authenticated as never);
     }
     if (error) {

@@ -3,6 +3,7 @@ import React from 'react';
 import { ActivityIndicator, Modal, View } from 'react-native';
 import UIStore from '../../stores/ui';
 import useStores from '../../hooks/use-stores';
+import { Colors } from '../../assets/styles';
 
 const LoadingIndicator = observer(() => {
   const uiStore: UIStore = useStores().uiStore;
@@ -15,9 +16,8 @@ const LoadingIndicator = observer(() => {
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-        }}
-      >
-        <ActivityIndicator size='large' color={'#079DDA'} />
+        }}>
+        <ActivityIndicator size='large' color={Colors.primary} />
       </View>
     </Modal>
   );

@@ -9,7 +9,7 @@ export const FontSizes = {
   xl: 19,
   xxl: 21,
   xxxl: 23,
-  header: 19,
+  header: 21,
   content: 15,
 };
 

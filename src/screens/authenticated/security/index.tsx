@@ -37,7 +37,7 @@ const Security = () => {
           Công cụ bảo mật
         </Text>
 
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, paddingVertical: 15 }}>
           <ToolButton />
         </View>
       </View>

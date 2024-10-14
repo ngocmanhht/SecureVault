@@ -16,18 +16,24 @@ import { createClient } from '@supabase/supabase-js';
 import { setupURLPolyfill } from 'react-native-url-polyfill';
 import { PaperProvider } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { navigationService } from './src/service/navigation-service';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './src/service/query-client';
+import LoadingIndicator from './src/components/loading-indicator';
 function App(): JSX.Element {
   return (
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <Provider {...stores}>
-          <PaperProvider>
-            <NavigationContainer>
-              <AppNavigator />
-            </NavigationContainer>
-          </PaperProvider>
-
-          <Toast />
+          <QueryClientProvider client={queryClient}>
+            <PaperProvider>
+              <NavigationContainer ref={navigationService.navigationRef}>
+                <AppNavigator />
+                <LoadingIndicator />
+              </NavigationContainer>
+            </PaperProvider>
+            <Toast />
+          </QueryClientProvider>
         </Provider>
       </GestureHandlerRootView>
     </>

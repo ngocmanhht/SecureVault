@@ -14,7 +14,7 @@ export const useSupabase = (tableName: TableName) => {
   const handleError = (error: AuthError) => {
     toast.show({
       type: 'error',
-      content: error.code as string,
+      content: error.code || 'Server Error',
     });
   };
   const getAllData = async () => {

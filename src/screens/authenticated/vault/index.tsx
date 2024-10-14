@@ -1,4 +1,6 @@
 import {
+  ActivityIndicator,
+  Button,
   FlatList,
   Image,
   SafeAreaView,
@@ -7,19 +9,33 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Text } from '../../../components/text';
 import { useSupabase } from '../../../hooks/use-supabase';
 import { TableName } from '../../../type/table';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Padding, shadowStyle } from '../../../assets/styles/layout';
-import { Colors, FontSizes } from '../../../assets/styles';
-import { Chip, Icon, Searchbar } from 'react-native-paper';
+import { appStyles, Colors, FontSizes } from '../../../assets/styles';
+import { Chip, Divider, Icon, Searchbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { Screens } from '../../../const';
 import { images } from '../../../assets/images';
 import { Icons } from '../../../assets/icons/const';
-
+import {
+  BottomSheetModal,
+  BottomSheetView,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
+import { TouchableWithoutFeedback } from 'react-native';
+import { Item } from './item';
+import { useQuery } from '@tanstack/react-query';
+import { supabaseService } from '../../../supabase';
 export const category = [
   {
     id: 1,
@@ -48,7 +64,12 @@ export const category = [
   },
 ];
 const Vault = () => {
-  const { data, isLoading } = useSupabase(TableName.Test);
+  // const { data, isLoading } = useSupabase(TableName.Test);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['fetchNotes'],
+    queryFn: () => supabaseService.getAllData(TableName.Password),
+  });
   const [tabIndex, setTabIndex] = useState(1);
   const navigation = useNavigation();
 
@@ -102,169 +123,276 @@ const Vault = () => {
   const onAddNewPress = () => {
     navigation.navigate(Screens.AddNewItem as never);
   };
-  return (
-    <SafeAreaView style={{ backgroundColor: Colors.white, flex: 1 }}>
-      <View
-        style={{
-          backgroundColor: Colors.white,
-          flex: 1,
-          justifyContent: 'center',
-          padding: Padding.screen,
-          gap: 15,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
-          <Text
-            style={{
-              fontWeight: 'bold',
-              fontSize: FontSizes.xxxl,
-              alignSelf: 'center',
-            }}>
-            Kho
-          </Text>
-          <TouchableOpacity
-            onPress={onAddNewPress}
-            style={{
-              backgroundColor: Colors.red,
-              padding: 10,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 5,
-              paddingHorizontal: 15,
-              alignContent: 'center',
-              shadowColor: '#ff0000',
-              shadowOffset: {
-                width: 0,
-                height: 3,
-              },
-              shadowOpacity: 0.18,
-              shadowRadius: 4.59,
-              elevation: 5,
-              gap: 5,
-            }}>
-            <Icon color={Colors.white} source={'plus'} size={20} />
-            <Text
-              style={{
-                alignSelf: 'center',
-                color: Colors.white,
-                fontWeight: 'bold',
-              }}>
-              Mới
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{ marginTop: 10 }}>
-          <Searchbar
-            style={{
-              height: 40,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: '#F1F3FD',
-            }}
-            placeholder='Tìm kiếm...'
-            onIconPress={() => {
-              console.log('1312');
-            }}
-            inputStyle={{ alignSelf: 'center' }}
-          />
-        </View>
 
-        <FlatList
-          data={category}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 5,
-            maxHeight: 40,
+  const [isVisible, setIsVisible] = useState(false);
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  // variables
+  const snapPoints = useMemo(() => ['30%', '46%'], []);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const handleCloseModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.forceClose();
+  }, []);
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log('handleSheetChanges', index);
+  }, []);
+  return (
+    <BottomSheetModalProvider>
+      <SafeAreaView style={{ backgroundColor: Colors.white, flex: 1 }}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            handleCloseModalPress();
           }}
-          style={{ maxHeight: 40 }}
-          renderItem={({ item }) => (
-            <View style={{ maxWidth: 200, padding: 5 }}>
-              <Chip
-                style={[
-                  { backgroundColor: Colors.white },
-                  tabIndex === item.id ? styles.shadowStyle : {},
-                ]}
-                icon={item.icon}
-                theme={{
-                  colors: {
-                    primary: Colors.gray500,
-                  },
-                }}
-                onPress={() => {
-                  console.log('Pressed');
-                  setTabIndex(item.id);
-                }}>
-                {item.name}
-              </Chip>
-            </View>
-          )}
-          horizontal
-        />
-        <View
           style={{
+            backgroundColor: Colors.white,
             flex: 1,
-            justifyContent: 'center',
-            alignContent: 'center',
-            alignItems: 'center',
-            padding: Padding.screen,
           }}>
           <View
             style={{
+              backgroundColor: Colors.white,
               flex: 1,
               justifyContent: 'center',
-              alignContent: 'center',
-              alignItems: 'center',
               padding: Padding.screen,
-              gap: 20,
+              gap: 15,
             }}>
-            <Image
-              style={{ width: 200, height: undefined, aspectRatio: 1 }}
-              resizeMode='contain'
-              source={emptyData.imageSource}
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: FontSizes.xxxl,
+                  alignSelf: 'center',
+                }}>
+                Kho
+              </Text>
+              <TouchableOpacity
+                onPress={onAddNewPress}
+                style={styles.addNewNoteButton}>
+                <Icon color={Colors.white} source={'plus'} size={20} />
+                <Text
+                  style={{
+                    alignSelf: 'center',
+                    color: Colors.white,
+                    fontWeight: 'bold',
+                  }}>
+                  Mới
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{ marginTop: 10 }}>
+              <Searchbar
+                style={{
+                  height: 40,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#F1F3FD',
+                }}
+                placeholder='Tìm kiếm...'
+                onIconPress={() => {
+                  console.log('1312');
+                }}
+                inputStyle={{ alignSelf: 'center' }}
+              />
+            </View>
+
+            <FlatList
+              data={category}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                gap: 5,
+                maxHeight: 40,
+              }}
+              style={{ maxHeight: 40 }}
+              renderItem={({ item }) => (
+                <View style={{ maxWidth: 200, padding: 5 }}>
+                  <Chip
+                    style={[
+                      { backgroundColor: Colors.white },
+                      tabIndex === item.id ? styles.shadowStyle : {},
+                    ]}
+                    icon={item.icon}
+                    theme={{
+                      colors: {
+                        primary: Colors.gray500,
+                      },
+                    }}
+                    onPress={() => {
+                      console.log('Pressed');
+                      setTabIndex(item.id);
+                    }}>
+                    {item.name}
+                  </Chip>
+                </View>
+              )}
+              horizontal
             />
             <View
               style={{
-                gap: 5,
+                flex: 1,
                 justifyContent: 'center',
-                alignItems: 'center',
+                alignContent: 'center',
+                paddingHorizontal: Padding.screen,
+                width: '100%',
               }}>
+              {!!isLoading ? (
+                <ActivityIndicator size='large' color={Colors.primary} />
+              ) : (
+                <FlatList
+                  data={data}
+                  contentContainerStyle={{ gap: 15 }}
+                  style={{ flex: 1 }}
+                  renderItem={({ item }) => (
+                    <>
+                      <Item
+                        item={item}
+                        onItemPress={() => {
+                          handleCloseModalPress();
+
+                          setTimeout(() => {
+                            handlePresentModalPress();
+                          }, 500);
+                        }}
+                      />
+                    </>
+                  )}
+                  ListEmptyComponent={
+                    <View
+                      style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        padding: Padding.screen,
+                        gap: 20,
+                      }}>
+                      <Image
+                        style={{
+                          width: 200,
+                          height: undefined,
+                          aspectRatio: 1,
+                        }}
+                        resizeMode='contain'
+                        source={emptyData.imageSource}
+                      />
+                      <View
+                        style={{
+                          gap: 5,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}>
+                        <Text
+                          style={{
+                            fontWeight: 'bold',
+                            fontSize: FontSizes.header,
+                          }}>
+                          {emptyData.header}
+                        </Text>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            fontSize: FontSizes.md,
+                            color: Colors.gray500,
+                          }}>
+                          {emptyData.content}
+                        </Text>
+                      </View>
+                    </View>
+                  }
+                />
+              )}
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </SafeAreaView>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={1}
+        snapPoints={snapPoints}
+        onDismiss={() => {
+          bottomSheetModalRef.current?.close();
+        }}
+        style={[
+          { borderWidth: 2, borderColor: Colors.gray300 },
+          appStyles.shadowStyle,
+        ]}
+        onChange={handleSheetChanges}>
+        <BottomSheetView style={[styles.contentContainer]}>
+          <View
+            style={{
+              flex: 1,
+              width: '100%',
+              padding: 10,
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                alignSelf: 'center',
+                marginBottom: 15,
+              }}>
+              <Icon size={35} source={'facebook'} color={Colors.primary} />
               <Text
                 style={{
                   fontWeight: 'bold',
                   fontSize: FontSizes.header,
                 }}>
-                {emptyData.header}
-              </Text>
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontSize: FontSizes.md,
-                  color: Colors.gray500,
-                }}>
-                {emptyData.content}
+                Facebook
               </Text>
             </View>
-          </View>
 
-          {/* <FlatList
-            data={data}
-            contentContainerStyle={{ flex: 1 }}
-            renderItem={({ item }) => <Text>{item?.created_at}</Text>}
-            ListEmptyComponent={
-              isLoading ? <Text>Loading</Text> : <Text>Empty</Text>
-            }
-            style={{ borderWidth: 1, flex: 1 }}
-          /> */}
-        </View>
-      </View>
-    </SafeAreaView>
+            <MButton title='Copy username' rightIcon='content-copy' />
+            <MButton title='Copy mật khẩu' rightIcon='content-copy' />
+            <MButton title='Xem' rightIcon='launch' />
+            <MButton title='Sửa' rightIcon='pencil' />
+            <MButton title='Xem mật khẩu' rightIcon='eye' />
+            <MButton title='Xóa' rightIcon='trash-can' color={Colors.red700} />
+          </View>
+        </BottomSheetView>
+      </BottomSheetModal>
+    </BottomSheetModalProvider>
   );
 };
 
+const MButton = ({
+  rightIcon,
+  title,
+  onPress,
+  color = Colors.gray700,
+}: {
+  rightIcon: string;
+  title: string;
+  onPress?: () => void;
+  color?: string;
+}) => {
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        onPress && onPress();
+      }}
+      style={{
+        flexDirection: 'row',
+        gap: 10,
+        padding: 10,
+        alignItems: 'center',
+      }}>
+      <Icon size={25} color={color} source={rightIcon} />
+      <Text
+        style={{
+          color: color,
+        }}>
+        {title}
+      </Text>
+    </TouchableOpacity>
+  );
+};
 export default Vault;
 
 const styles = StyleSheet.create({
@@ -279,5 +407,34 @@ const styles = StyleSheet.create({
     elevation: 5,
     backgroundColor: 'white',
     borderRadius: 10,
+  },
+  container: {
+    flex: 1,
+    padding: 24,
+    justifyContent: 'center',
+    backgroundColor: 'grey',
+  },
+  contentContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  addNewNoteButton: {
+    backgroundColor: Colors.red,
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    paddingHorizontal: 15,
+    alignContent: 'center',
+    shadowColor: '#ff0000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 4.59,
+    elevation: 5,
+    gap: 5,
   },
 });
