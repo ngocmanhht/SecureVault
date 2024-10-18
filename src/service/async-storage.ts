@@ -25,6 +25,16 @@ class AsyncStorageService {
   removeProfile = async () => {
     await AsyncStorage.removeItem(AUTH_STORAGE_KEY);
   };
+  setIsUseFaceID = async (value: boolean) => {
+    await AsyncStorage.setItem('isUseFaceID', JSON.stringify(value));
+  };
+  getIsUseFaceID = async () => {
+    const value = await AsyncStorage.getItem('isUseFaceID');
+    if (value !== null) {
+      return JSON.parse(value);
+    }
+    return false;
+  };
 }
 
 export const asyncStorageService = new AsyncStorageService();

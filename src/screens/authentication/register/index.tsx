@@ -39,14 +39,23 @@ export const Register = () => {
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       supabaseService.signUpWithEmail(email, password),
     onSuccess: () => {
-      navigation.navigate(Screens.RegisterSuccess as never);
+      const profile = {
+        email,
+        password,
+      };
+      navigation.navigate({
+        name: Screens.RegisterSuccess,
+        params: {
+          profile,
+        },
+      } as never);
     },
   });
 
   const onSubmit = (value: {
     email: string;
     password: string;
-    rePasswors: string;
+    rePassword: string;
   }) => {
     registerMutation.mutate({
       email: value.email,
@@ -234,7 +243,14 @@ export const Register = () => {
           <LongButton
             buttonColor={Colors.red}
             textColor='white'
-            onPress={handleSubmit(onSubmit)}
+            onPress={handleSubmit(({ email, password, rePassword }) => {
+              const value = {
+                email,
+                password,
+                rePassword,
+              };
+              onSubmit(value);
+            })}
             title='Tiếp theo'
           />
         </View>

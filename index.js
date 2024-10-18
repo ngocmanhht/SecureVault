@@ -9,7 +9,6 @@ import 'react-native-url-polyfill/auto';
 import { Platform, NativeModules } from 'react-native';
 import 'react-native-gesture-handler';
 
-
 if (__DEV__) {
   require('./ReactotronConfig');
 }

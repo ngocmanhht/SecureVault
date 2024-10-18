@@ -19,9 +19,9 @@ class SupabaseService {
   }
 
   private handleError = (error: AuthError | PostgrestError | null) => {
-    if (error?.status === 401) {
-      navigationService.reset(Screens.Authentication);
-    }
+    // if (error?.code === "401") {
+    //   navigationService.reset(Screens.Authentication);
+    // }
 
     Toast.show({
       type: 'error',

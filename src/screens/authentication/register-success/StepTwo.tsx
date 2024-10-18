@@ -5,11 +5,39 @@ import { images } from '../../../assets/images';
 import { Text } from '../../../components/text';
 import { CheckBoxWithLabel } from '../register/components/check-box-with-label';
 import { LongButton } from '../../../components/long-button';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Screens } from '../../../const';
-
+import TouchID from 'react-native-touch-id';
+import { asyncStorageService } from '../../../service/async-storage';
+import * as Keychain from 'react-native-keychain';
 const StepTwo = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const params = route.params as {
+    profile: { email: string; password: string };
+  };
+  const storageLoginProfile = async (username: string, password: string) => {
+    // Store the credentials
+    await Keychain.setGenericPassword(username, password);
+    navigation.navigate(Screens.Login as never);
+  };
+
+  const requestFaceId = async () => {
+    try {
+      const response = await TouchID.authenticate(
+        'to demo this react-native component',
+      );
+      if (!!response) {
+        await asyncStorageService.setIsUseFaceID(true);
+        await storageLoginProfile(
+          params.profile.email,
+          params.profile.password,
+        );
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
   return (
     <View
       style={{
@@ -46,7 +74,7 @@ const StepTwo = () => {
         buttonColor={Colors.red}
         title='Sử dụng Face ID'
         onPress={() => {
-          navigation.navigate(Screens.Login as never);
+          requestFaceId();
         }}
         buttonStyle={{
           width: '100%',

@@ -3990,7 +3990,7 @@ __metadata:
     react-native-gesture-handler: ^2.14.0
     react-native-image-picker: ^7.1.2
     react-native-keyboard-controller: ^1.12.7
-    react-native-keychain: ^8.2.0
+    react-native-keychain: ^9.0.0
     react-native-paper: ^5.12.5
     react-native-reanimated: ^3.15.0
     react-native-responsive-screen: ^1.4.2
@@ -9573,10 +9573,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-keychain@npm:^8.2.0":
-  version: 8.2.0
-  resolution: "react-native-keychain@npm:8.2.0"
-  checksum: 4c4d5331013b8ab17c21120a2388e1e82aa30586738c0a34ed9dcffb6ce12454125ddb690951cad5563c9290b060eb68ccffa9477650cc3a5ddc347696b5d4ef
+"react-native-keychain@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "react-native-keychain@npm:9.0.0"
+  checksum: 2d27892ea583cc9a3d41330f926e887266abf75f29a38fcc15c56581fac628ae39ad300a7cc218483b4c7fc02ace6755a06ded05c6a0fe96bfe95070d04b5a0b
   languageName: node
   linkType: hard
 

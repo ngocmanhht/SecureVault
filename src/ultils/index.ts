@@ -1,6 +1,7 @@
 export const REACT_APP_SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || '';
 export const REACT_APP_SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY || '';
 export const AUTH_STORAGE_KEY = 'authProfile';
+export const FACE_IS_STORAGE_KEY = 'faceid';
 
 export const validateEmail = (email: any) => {
   const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;

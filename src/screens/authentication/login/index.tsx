@@ -46,8 +46,6 @@ export const Login = observer(() => {
     });
     uiStore.hideLoading();
     if (data.user && data.session) {
-      console.log('data', data);
-
       navigation.navigate(Screens.Authenticated as never);
     }
     if (error) {
@@ -118,7 +116,7 @@ export const Login = observer(() => {
               <Text style={[styles.header]}>ault</Text>
             </Text>
           </View>
-          <View style={{ alignSelf: 'center', gap: 20 }}>
+          <View style={{ alignSelf: 'center', gap: 0 }}>
             <Controller
               control={control}
               name='email'

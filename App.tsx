@@ -5,15 +5,12 @@
  * @format
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import AppNavigator from './src/navigators';
 import { Provider } from 'mobx-react';
 import stores from './src/stores';
 import Toast from 'react-native-toast-message';
-import { StatusBar } from 'react-native';
-import { createClient } from '@supabase/supabase-js';
-import { setupURLPolyfill } from 'react-native-url-polyfill';
 import { PaperProvider } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { navigationService } from './src/service/navigation-service';
