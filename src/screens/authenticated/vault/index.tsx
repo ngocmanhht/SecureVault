@@ -1,31 +1,22 @@
 import {
   ActivityIndicator,
-  Button,
+  Alert,
   FlatList,
   Image,
+  Linking,
   SafeAreaView,
-  SectionList,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Text } from '../../../components/text';
-import { useSupabase } from '../../../hooks/use-supabase';
 import { TableName } from '../../../type/table';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Padding, shadowStyle } from '../../../assets/styles/layout';
+import { Padding } from '../../../assets/styles/layout';
 import { appStyles, Colors, FontSizes } from '../../../assets/styles';
-import { Chip, Divider, Icon, Searchbar } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import { Chip, Icon, Searchbar } from 'react-native-paper';
+import { Link, useIsFocused, useNavigation } from '@react-navigation/native';
 import { Screens } from '../../../const';
-import { images } from '../../../assets/images';
 import { Icons } from '../../../assets/icons/const';
 import {
   BottomSheetModal,
@@ -34,8 +25,16 @@ import {
 } from '@gorhom/bottom-sheet';
 import { TouchableWithoutFeedback } from 'react-native';
 import { Item } from './item';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { supabaseService } from '../../../supabase';
+import { Note, NoteType } from '../../../type/note';
+import { set } from 'mobx';
+import { getColors, getMatchedItem } from './password-item';
+import UIStore from '../../../stores/ui';
+import useStores from '../../../hooks/use-stores';
+import Clipboard from '@react-native-clipboard/clipboard';
+import TouchID from 'react-native-touch-id';
+import useCustomToast from '../../../hooks/use-toast';
 export const category = [
   {
     id: 1,
@@ -64,13 +63,31 @@ export const category = [
   },
 ];
 const Vault = () => {
-  // const { data, isLoading } = useSupabase(TableName.Test);
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['fetchNotes'],
-    queryFn: () => supabaseService.getAllData(TableName.Password),
-  });
+  const isFocused = useIsFocused();
+  const [note, setNote] = useState<Note | null>(null);
   const [tabIndex, setTabIndex] = useState(1);
+  const uiStore: UIStore = useStores().uiStore;
+
+  const filterTabTitle = useMemo(() => {
+    switch (tabIndex) {
+      case 2:
+        return NoteType.Password;
+      case 3:
+        return NoteType.Note;
+      case 4:
+        return NoteType.Contact;
+      case 5:
+        return NoteType.BankAccount;
+      default:
+        return null;
+    }
+  }, [tabIndex]);
+
+  const { data, isLoading, refetch } = useQuery<Note[]>({
+    queryKey: ['fetchNotes', isFocused, filterTabTitle],
+    queryFn: () => supabaseService.getAllData(TableName.Notes, filterTabTitle),
+    enabled: isFocused,
+  });
   const navigation = useNavigation();
 
   const emptyData = useMemo(() => {
@@ -124,13 +141,15 @@ const Vault = () => {
     navigation.navigate(Screens.AddNewItem as never);
   };
 
-  const [isVisible, setIsVisible] = useState(false);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
-  // variables
-  const snapPoints = useMemo(() => ['30%', '46%'], []);
+  const snapPoints = useMemo(() => {
+    if (note?.noteType === NoteType.Password) {
+      return ['30%', '50%'];
+    }
+    return ['25%', '30%'];
+  }, [note]);
 
-  // callbacks
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
@@ -141,8 +160,48 @@ const Vault = () => {
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
   }, []);
+
+  const deleteNoteMutation = useMutation({
+    mutationKey: ['deleteNote'],
+    mutationFn: (id: any) => supabaseService.deleteNote(id),
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const toast = useCustomToast();
+  const onDeletePress = async () => {
+    try {
+      const isSpFaceId = await TouchID.isSupported();
+      if (isSpFaceId) {
+        const response = await TouchID.authenticate();
+        if (!!response) {
+          Alert.alert('Cảnh báo', `Bạn có muốn xóa ?`, [
+            {
+              text: 'Hủy',
+              style: 'cancel',
+            },
+            {
+              text: 'Xóa',
+              style: 'destructive',
+              onPress: () => {
+                deleteNoteMutation.mutate(note?.id);
+              },
+            },
+          ]);
+        }
+      }
+    } catch (error: any) {
+      console.log('errr', error);
+      toast.show({
+        type: 'error',
+        content: '',
+        title: error || 'Error with Face ID',
+      });
+    }
+  };
   return (
-    <BottomSheetModalProvider>
+    <>
       <SafeAreaView style={{ backgroundColor: Colors.white, flex: 1 }}>
         <TouchableWithoutFeedback
           onPress={() => {
@@ -199,6 +258,7 @@ const Vault = () => {
                 onIconPress={() => {
                   console.log('1312');
                 }}
+                value=''
                 inputStyle={{ alignSelf: 'center' }}
               />
             </View>
@@ -255,10 +315,11 @@ const Vault = () => {
                         item={item}
                         onItemPress={() => {
                           handleCloseModalPress();
-
+                          setNote(item);
                           setTimeout(() => {
                             handlePresentModalPress();
-                          }, 500);
+                          }, 1000);
+                          console.log('121');
                         }}
                       />
                     </>
@@ -331,33 +392,220 @@ const Vault = () => {
               width: '100%',
               padding: 10,
             }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                alignSelf: 'center',
-                marginBottom: 15,
-              }}>
-              <Icon size={35} source={'facebook'} color={Colors.primary} />
-              <Text
-                style={{
-                  fontWeight: 'bold',
-                  fontSize: FontSizes.header,
-                }}>
-                Facebook
-              </Text>
-            </View>
+            {note?.noteType === NoteType.Password && (
+              <>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    alignSelf: 'center',
+                    marginBottom: 15,
+                    gap: 10,
+                  }}>
+                  <Icon
+                    size={35}
+                    source={getMatchedItem(note as Note).icon}
+                    color={getColors(note?.typeAccount as string)}
+                  />
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                      fontSize: FontSizes.header,
+                    }}>
+                    {note?.typeAccount}
+                  </Text>
+                </View>
+                <MButton
+                  onPress={async () => {
+                    if (note?.url && (await Linking.canOpenURL(note.url))) {
+                      Linking.openURL(note.url);
+                    }
+                  }}
+                  title='Mở'
+                  rightIcon='launch'
+                />
+                <MButton
+                  title='Copy username'
+                  onPress={() => {
+                    if (note?.userName) {
+                      Clipboard.setString(note.userName);
+                      handleCloseModalPress();
+                      uiStore.showSnackBar({
+                        content: note.userName,
+                      });
+                    }
+                  }}
+                  rightIcon='content-copy'
+                />
+                <MButton
+                  title='Copy mật khẩu'
+                  onPress={() => {
+                    if (note?.password) {
+                      Clipboard.setString(note.password);
+                      handleCloseModalPress();
+                      uiStore.showSnackBar({
+                        content: note.password,
+                      });
+                    }
+                  }}
+                  rightIcon='content-copy'
+                />
+                <MButton
+                  onPress={() => {
+                    handleCloseModalPress();
+                    navigation.navigate({
+                      name: Screens.Add,
+                      params: {
+                        type: NoteType.Password,
+                        item: note,
+                      },
+                    } as never);
+                  }}
+                  title='Xem'
+                  rightIcon='launch'
+                />
+                <MButton
+                  onPress={() => {
+                    handleCloseModalPress();
+                    navigation.navigate({
+                      name: Screens.Add,
+                      params: {
+                        type: NoteType.Password,
+                        item: note,
+                      },
+                    } as never);
+                  }}
+                  title='Sửa'
+                  rightIcon='pencil'
+                />
+                <MButton title='Xem mật khẩu' rightIcon='eye' />
+                <MButton
+                  title='Xóa'
+                  rightIcon='trash-can'
+                  color={Colors.red700}
+                  onPress={onDeletePress}
+                />
+              </>
+            )}
 
-            <MButton title='Copy username' rightIcon='content-copy' />
-            <MButton title='Copy mật khẩu' rightIcon='content-copy' />
-            <MButton title='Xem' rightIcon='launch' />
-            <MButton title='Sửa' rightIcon='pencil' />
-            <MButton title='Xem mật khẩu' rightIcon='eye' />
-            <MButton title='Xóa' rightIcon='trash-can' color={Colors.red700} />
+            {note?.noteType === NoteType.Note && (
+              <>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    alignSelf: 'center',
+                    marginBottom: 15,
+                    gap: 10,
+                  }}>
+                  <Icon size={35} source={'note'} color={Colors.gray500} />
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                      fontSize: FontSizes.header,
+                    }}>
+                    {note?.title}
+                  </Text>
+                </View>
+                <MButton
+                  onPress={() => {
+                    handleCloseModalPress();
+                    navigation.navigate({
+                      name: Screens.Add,
+                      params: {
+                        type: NoteType.Note,
+                        item: note,
+                      },
+                    } as never);
+                  }}
+                  title='Xem'
+                  rightIcon='launch'
+                />
+                <MButton
+                  onPress={() => {
+                    handleCloseModalPress();
+                    navigation.navigate({
+                      name: Screens.Add,
+                      params: {
+                        type: NoteType.Note,
+                        item: note,
+                      },
+                    } as never);
+                  }}
+                  title='Sửa'
+                  rightIcon='pencil'
+                />
+                <MButton
+                  title='Xóa'
+                  rightIcon='trash-can'
+                  color={Colors.red700}
+                  onPress={onDeletePress}
+                />
+              </>
+            )}
+            {note?.noteType === NoteType.BankAccount && (
+              <>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    alignSelf: 'center',
+                    marginBottom: 15,
+                    gap: 10,
+                  }}>
+                  <Icon
+                    size={35}
+                    source={'credit-card'}
+                    color={Colors.yellow800}
+                  />
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                      fontSize: FontSizes.header,
+                    }}>
+                    {note?.title}
+                  </Text>
+                </View>
+                <MButton
+                  onPress={() => {
+                    handleCloseModalPress();
+                    navigation.navigate({
+                      name: Screens.Add,
+                      params: {
+                        type: NoteType.BankAccount,
+                        item: note,
+                      },
+                    } as never);
+                  }}
+                  title='Xem'
+                  rightIcon='launch'
+                />
+                <MButton
+                  onPress={() => {
+                    handleCloseModalPress();
+                    navigation.navigate({
+                      name: Screens.Add,
+                      params: {
+                        type: NoteType.BankAccount,
+                        item: note,
+                      },
+                    } as never);
+                  }}
+                  title='Sửa'
+                  rightIcon='pencil'
+                />
+                <MButton
+                  title='Xóa'
+                  rightIcon='trash-can'
+                  color={Colors.red700}
+                  onPress={onDeletePress}
+                />
+              </>
+            )}
           </View>
         </BottomSheetView>
       </BottomSheetModal>
-    </BottomSheetModalProvider>
+    </>
   );
 };
 

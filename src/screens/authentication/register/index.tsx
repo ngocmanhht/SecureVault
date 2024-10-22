@@ -1,5 +1,6 @@
 import {
   Button,
+  Image,
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
@@ -82,7 +83,19 @@ export const Register = () => {
             },
             appStyles.shadowStyle,
           ]}>
-          <Text style={{ color: Colors.gray500 }}>Hãy bắt đầu nào</Text>
+          <Image
+            style={{
+              width: 100,
+              height: undefined,
+              aspectRatio: 1,
+              resizeMode: 'contain',
+              borderRadius: 20,
+              alignSelf: 'center',
+              marginBottom: 10,
+            }}
+            source={Icons.Logo}
+          />
+          {/* <Text style={{ color: Colors.gray500 }}>Hãy bắt đầu nào</Text> */}
 
           <View style={{ paddingHorizontal: 15 }}>
             <Controller

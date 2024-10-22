@@ -12,16 +12,18 @@ export const LongButton = ({
   textColor,
   onPress,
   buttonStyle,
+  disable = false,
 }: {
   title: string;
   buttonColor?: string;
   textColor?: string;
   onPress: () => void;
   buttonStyle?: StyleProp<ViewStyle>;
+  disable?: boolean;
 }) => {
   return (
     <TouchableOpacity
-      disabled={false}
+      disabled={disable}
       onPress={onPress}
       style={[
         {

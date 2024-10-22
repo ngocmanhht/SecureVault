@@ -9,10 +9,10 @@ import 'react-native-url-polyfill/auto';
 import { Platform, NativeModules } from 'react-native';
 import 'react-native-gesture-handler';
 
-if (__DEV__) {
-  require('./ReactotronConfig');
-}
+// if (__DEV__) {
+//   require('./ReactotronConfig');
+// }
 // if (__DEV__ && Platform.OS === 'ios') {
-//   NativeModules.DevSettings.setIsDebuggingRemotely(true);
+//   NativeModules.DevSettings.setIsDebuggingRemotely(false);
 // }
 AppRegistry.registerComponent(appName, () => App);

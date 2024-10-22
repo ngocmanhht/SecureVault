@@ -1,3 +1,5 @@
+import { NoteType } from './note';
+
 export enum PasswordStrength {
   Average,
   Strong,
@@ -10,9 +12,12 @@ export type PasswordGenerateOptions = {
 
 export interface IPassword {
   id?: number;
-  type_account: string;
+  typeAccount: string;
   url: string;
-  user_name: string;
+  userName: string;
   password: string;
-  user_id: any;
+  userid?: any;
+  notes?: string;
+  isRequireMasterPassword?: boolean;
+  noteType?: NoteType;
 }

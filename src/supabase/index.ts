@@ -10,6 +10,8 @@ import {
 import { TableName } from '../type/table';
 import { IPassword } from '../type/password';
 import { error } from 'console';
+import { INote, Note, NoteType } from '../type/note';
+import { IBankAccount } from '../type/bank-account';
 
 class SupabaseService {
   private supabase: SupabaseClient;
@@ -63,14 +65,25 @@ class SupabaseService {
     }
   };
 
-  getAllData = async (tableName: TableName) => {
-    const { data, error } = await supabase.from(tableName).select('*');
-    return data;
+  getAllData = async (tableName: TableName, noteType?: NoteType | null) => {
+    let query = supabase.from(tableName).select('*');
+    query = query.order('id', {
+      ascending: true,
+    });
+    if (noteType) {
+      query = query.eq('noteType', noteType);
+    }
+
+    const { data, error } = await query;
+    if (!!!data) {
+      return [];
+    }
+    return data as Array<Note>;
   };
 
-  createNewPasswordNote = async (note: IPassword) => {
+  createNewNote = async (note: IPassword | INote | IBankAccount) => {
     const { data, error } = await supabase
-      .from(TableName.Password)
+      .from(TableName.Notes)
       .insert(note)
       .select();
     if (!!error) {
@@ -81,6 +94,39 @@ class SupabaseService {
       console.log('data', data);
       return Promise.resolve(data);
     }
+  };
+
+  updateNote = async (note: IPassword | INote | IBankAccount, id: any) => {
+    const { data, error } = await supabase
+      .from(TableName.Notes)
+      .update({
+        ...note,
+        id: id,
+      })
+      .eq('id', id)
+      .select();
+    console.log('a1k5w', data);
+    if (!!error) {
+      this.handleError(error);
+      return Promise.reject(error);
+    }
+    if (!!data) {
+      console.log('data', data);
+      return Promise.resolve(data);
+    }
+  };
+
+  deleteNote = async (id: any) => {
+    const { error } = await supabase
+      .from(TableName.Notes)
+      .delete()
+      .eq('id', id);
+
+    if (!!error) {
+      this.handleError(error);
+      return Promise.reject(error);
+    }
+    return Promise.resolve('success');
   };
 
   getUid = async () => {

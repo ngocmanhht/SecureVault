@@ -7,6 +7,8 @@ PODS:
   - hermes-engine (0.74.1):
     - hermes-engine/Pre-built (= 0.74.1)
   - hermes-engine/Pre-built (0.74.1)
+  - jail-monkey (2.8.0):
+    - React-Core
   - RCT-Folly (2024.01.01.00):
     - boost
     - DoubleConversion
@@ -937,6 +939,8 @@ PODS:
     - React-debug
   - react-native-blob-util (0.19.9):
     - React-Core
+  - react-native-date-picker (5.0.7):
+    - React-Core
   - react-native-image-picker (7.1.2):
     - DoubleConversion
     - glog
@@ -983,6 +987,9 @@ PODS:
     - React
   - react-native-safe-area-context (4.11.0):
     - React-Core
+  - react-native-screenguard (1.0.2):
+    - React-Core
+    - SDWebImage (~> 5.19.4)
   - react-native-slider (4.5.3):
     - DoubleConversion
     - glog
@@ -1389,6 +1396,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - SDWebImage (5.19.7):
+    - SDWebImage/Core (= 5.19.7)
+  - SDWebImage/Core (5.19.7)
   - SocketRocket (0.7.0)
   - TouchID (4.4.1):
     - React
@@ -1401,6 +1411,7 @@ DEPENDENCIES:
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
+  - jail-monkey (from `../node_modules/jail-monkey`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTDeprecation (from `../node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
@@ -1428,10 +1439,12 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - react-native-blob-util (from `../node_modules/react-native-blob-util`)
+  - react-native-date-picker (from `../node_modules/react-native-date-picker`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
   - react-native-rsa-native (from `../node_modules/react-native-rsa-native`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-screenguard (from `../node_modules/react-native-screenguard`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
@@ -1469,6 +1482,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - SDWebImage
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -1485,6 +1499,8 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2024-04-25-RNv0.74.1-b54a3a01c531f4f5f1904cb0770033e8b7153dff
+  jail-monkey:
+    :path: "../node_modules/jail-monkey"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
@@ -1535,6 +1551,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   react-native-blob-util:
     :path: "../node_modules/react-native-blob-util"
+  react-native-date-picker:
+    :path: "../node_modules/react-native-date-picker"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
   react-native-keyboard-controller:
@@ -1543,6 +1561,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-rsa-native"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-screenguard:
+    :path: "../node_modules/react-native-screenguard"
   react-native-slider:
     :path: "../node_modules/@react-native-community/slider"
   react-native-splash-screen:
@@ -1619,6 +1639,7 @@ SPEC CHECKSUMS:
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   hermes-engine: 16b8530de1b383cdada1476cf52d1b52f0692cbc
+  jail-monkey: a71b35d482a70ecba844a90f002994012cf12a5d
   RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
   RCTDeprecation: efb313d8126259e9294dc4ee0002f44a6f676aba
   RCTRequired: f49ea29cece52aee20db633ae7edc4b271435562
@@ -1644,10 +1665,12 @@ SPEC CHECKSUMS:
   React-logger: 7e7403a2b14c97f847d90763af76b84b152b6fce
   React-Mapbuffer: 11029dcd47c5c9e057a4092ab9c2a8d10a496a33
   react-native-blob-util: 18b510205c080a453574a7d2344d64673d0ad9af
+  react-native-date-picker: 06a4d96ab525a163c7a90bccd68833d136b0bb13
   react-native-image-picker: c3afe5472ef870d98a4b28415fc0b928161ee5f7
   react-native-keyboard-controller: 07a457e3a882f85591f98034e6fcc930df9a8865
   react-native-rsa-native: 12132eb627797529fdb1f0d22fd0f8f9678df64a
   react-native-safe-area-context: 851c62c48dce80ccaa5637b6aa5991a1bc36eca9
+  react-native-screenguard: b936a398be0b8250e24aef5823991602c96355a1
   react-native-slider: 4f44dba40a5e9defebedabf290e07e985d731923
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   React-nativeconfig: b0073a590774e8b35192fead188a36d1dca23dec
@@ -1680,6 +1703,7 @@ SPEC CHECKSUMS:
   RNReanimated: 45553a3ae29a75a76269595f8554d07d4090e392
   RNScreens: b32a9ff15bea7fcdbe5dff6477bc503f792b1208
   RNVectorIcons: 845eda5c7819bd29699cafd0fc98c9d4afe28c96
+  SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
   Yoga: 348f8b538c3ed4423eb58a8e5730feec50bce372

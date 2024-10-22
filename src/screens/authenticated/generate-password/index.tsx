@@ -113,13 +113,13 @@ export const GeneratePassword = () => {
             justifyContent: 'center',
             alignItems: 'flex-end',
           }}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text
               style={{ color: Colors.gray500, fontSize: FontSizes.content }}>
               Tiếp
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
 

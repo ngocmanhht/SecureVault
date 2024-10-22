@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Divider, Icon, Switch } from 'react-native-paper';
 import { appStyles, Colors, FontSizes } from '../../../assets/styles';
@@ -12,7 +12,9 @@ import { IPassword } from '../../../type/password';
 import { supabaseService } from '../../../supabase';
 import { useMutation } from '@tanstack/react-query';
 import useCustomToast from '../../../hooks/use-toast';
-export const AddPassword = () => {
+import { Controller, useForm } from 'react-hook-form';
+import { NoteType } from '../../../type/note';
+export const AddPassword = ({ initialValue }: { initialValue?: IPassword }) => {
   const data = [
     { label: 'Facebook', value: 'Facebook', icon: 'facebook' },
     { label: 'Google', value: 'Google', icon: 'google' },
@@ -25,9 +27,20 @@ export const AddPassword = () => {
     { label: 'Other', value: 'Other', icon: 'note-text' },
   ];
   const navigation = useNavigation();
-  const [value, setValue] = useState<string | null>(null);
+  // const [value, setValue] = useState<string | null>(null);
   const [isFocus, setIsFocus] = useState(false);
   const [item, setItem] = useState<any>();
+
+  const {
+    watch,
+    control,
+    getValues,
+    handleSubmit,
+    setValue,
+    formState: { isDirty },
+  } = useForm<IPassword>({
+    defaultValues: {},
+  });
   const getColors = (label: string) => {
     switch (label) {
       case 'Facebook':
@@ -53,20 +66,9 @@ export const AddPassword = () => {
     }
   };
 
-  const renderLabel = () => {
-    if (value || isFocus) {
-      return (
-        <Text style={[styles.label, isFocus && { color: 'blue' }]}>
-          Loại tài khoản
-        </Text>
-      );
-    }
-    return null;
-  };
   const toast = useCustomToast();
   const addPasswordMutation = useMutation({
-    mutationFn: (data: IPassword) =>
-      supabaseService.createNewPasswordNote(data),
+    mutationFn: (data: IPassword) => supabaseService.createNewNote(data),
     onSuccess: () => {
       toast.show({
         type: 'success',
@@ -76,17 +78,48 @@ export const AddPassword = () => {
       navigation.navigate(Screens.Vault as never);
     },
   });
-  const onSavePress = async () => {
+
+  const updatePasswordMutation = useMutation({
+    mutationFn: (data: IPassword) =>
+      supabaseService.updateNote(data, initialValue?.id),
+    onSuccess: () => {
+      toast.show({
+        type: 'success',
+        title: 'Sửa thành công',
+        content: '',
+      });
+      navigation.navigate(Screens.Vault as never);
+    },
+  });
+
+  const onSubmit = async (data: IPassword) => {
     const uid = await supabaseService.getUid();
     const test: IPassword = {
-      type_account: 'Facebook',
-      password: 'ngocda2',
-      url: 'hahahsda112',
-      user_name: 'ngocda2',
-      user_id: uid,
+      ...data,
+      userid: uid,
+      noteType: NoteType.Password,
     };
+    console.log('aaa', data);
+    if (!!initialValue) {
+      updatePasswordMutation.mutate(test);
+      return;
+    }
     addPasswordMutation.mutate(test);
   };
+
+  useEffect(() => {
+    if (!!initialValue) {
+      for (const [key, value] of Object.entries(initialValue)) {
+        setValue(key as any, value, {
+          shouldDirty: false,
+        });
+        const item = data.find(i => i.label === initialValue?.typeAccount);
+        !!item && setItem(item);
+      }
+    }
+  }, [initialValue]);
+  console.log('111', initialValue);
+
   return (
     <View style={{ gap: 20 }}>
       <View
@@ -101,6 +134,7 @@ export const AddPassword = () => {
           appStyles.shadowStyle,
         ]}>
         <Text style={styles.titleText}>Chọn loại tài khoản</Text>
+
         <Dropdown
           style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
           placeholderStyle={styles.placeholderStyle}
@@ -131,12 +165,12 @@ export const AddPassword = () => {
           valueField='value'
           placeholder={!isFocus ? 'Chọn tài khoản' : '...'}
           searchPlaceholder='Tìm kiếm...'
-          value={value}
+          value={watch('typeAccount')}
           onFocus={() => setIsFocus(true)}
           onBlur={() => setIsFocus(false)}
           onChange={item => {
             setItem(item);
-            setValue(item.value);
+            setValue('typeAccount', item.value);
             setIsFocus(false);
           }}
           renderLeftIcon={() => (
@@ -162,43 +196,68 @@ export const AddPassword = () => {
         ]}>
         <View>
           <Text style={styles.titleText}>Url</Text>
-          <CustomTextInput
-            containerStyle={{
-              paddingVertical: 1,
-              width: '100%',
-              marginTop: 5,
-              borderRadius: 8,
-            }}
-            value=''
-            onTextChange={() => {}}
+          <Controller
+            control={control}
+            name='url'
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomTextInput
+                containerStyle={{
+                  paddingVertical: 1,
+                  width: '100%',
+                  marginTop: 5,
+                  borderRadius: 8,
+                }}
+                value={value}
+                onTextChange={e => {
+                  onChange(e);
+                }}
+              />
+            )}
           />
         </View>
 
         <View>
           <Text style={styles.titleText}>Tên đăng nhập</Text>
-          <CustomTextInput
-            containerStyle={{
-              paddingVertical: 1,
-              width: '100%',
-              marginTop: 5,
-              borderRadius: 8,
-            }}
-            value=''
-            onTextChange={() => {}}
+          <Controller
+            control={control}
+            name='userName'
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomTextInput
+                containerStyle={{
+                  paddingVertical: 1,
+                  width: '100%',
+                  marginTop: 5,
+                  borderRadius: 8,
+                }}
+                value={value}
+                onTextChange={e => {
+                  onChange(e);
+                }}
+              />
+            )}
           />
         </View>
 
         <View>
           <Text style={styles.titleText}>Mật khẩu</Text>
-          <CustomTextInput
-            containerStyle={{
-              paddingVertical: 1,
-              width: '100%',
-              marginTop: 5,
-              borderRadius: 8,
-            }}
-            value=''
-            onTextChange={() => {}}
+          <Controller
+            control={control}
+            name='password'
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomTextInput
+                containerStyle={{
+                  paddingVertical: 1,
+                  width: '100%',
+                  marginTop: 5,
+                  borderRadius: 8,
+                }}
+                isPassword
+                value={value}
+                onTextChange={e => {
+                  onChange(e);
+                }}
+              />
+            )}
           />
         </View>
       </View>
@@ -216,16 +275,24 @@ export const AddPassword = () => {
         ]}>
         <View>
           <Text style={styles.titleText}>Ghi chú</Text>
-          <CustomTextInput
-            multiline={true}
-            containerStyle={{
-              paddingVertical: 1,
-              width: '100%',
-              marginTop: 5,
-              borderRadius: 8,
-            }}
-            value=''
-            onTextChange={() => {}}
+
+          <Controller
+            control={control}
+            name='notes'
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CustomTextInput
+                containerStyle={{
+                  paddingVertical: 1,
+                  width: '100%',
+                  marginTop: 5,
+                  borderRadius: 8,
+                }}
+                value={value}
+                onTextChange={e => {
+                  onChange(e);
+                }}
+              />
+            )}
           />
         </View>
       </View>
@@ -261,17 +328,23 @@ export const AddPassword = () => {
               </Text>
             </View>
             <View style={{ alignSelf: 'center' }}>
-              <Switch />
+              <Switch
+                value={!!watch('isRequireMasterPassword')}
+                onValueChange={val => {
+                  setValue('isRequireMasterPassword', val);
+                }}
+              />
             </View>
           </View>
         </View>
       </View>
       <View style={{ paddingVertical: 10, zIndex: 999999999 }}>
         <LongButton
-          buttonColor={Colors.primary}
+          disable={!isDirty}
+          buttonColor={isDirty ? Colors.primary : Colors.gray600}
           textColor={Colors.white}
           title='Lưu'
-          onPress={onSavePress}
+          onPress={handleSubmit(onSubmit)}
           buttonStyle={{
             width: '100%',
           }}

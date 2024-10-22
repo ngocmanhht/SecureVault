@@ -6,7 +6,10 @@ import { Text } from '../../../components/text';
 import { OptionType } from '../../../type/options';
 import { useNavigation } from '@react-navigation/native';
 import { Screens } from '../../../const';
-
+import { useQuery } from '@tanstack/react-query';
+import { asyncStorageService } from '../../../service/async-storage';
+import TouchId from 'react-native-touch-id';
+import useCustomToast from '../../../hooks/use-toast';
 export const SecuritySettings = () => {
   const navigation = useNavigation();
   const onOptionsPress = (option: OptionType) => {
@@ -18,6 +21,12 @@ export const SecuritySettings = () => {
     } as never);
   };
 
+  const toast = useCustomToast();
+
+  const { data: isUseFaceID, refetch } = useQuery({
+    queryKey: ['getISUseFaceId'],
+    queryFn: () => asyncStorageService.getIsUseFaceID(),
+  });
   return (
     <View
       style={{
@@ -37,7 +46,28 @@ export const SecuritySettings = () => {
           appStyles.shadowStyle,
         ]}>
         <Text>Đăng nhập bằng Face ID</Text>
-        <Switch />
+        <Switch
+          value={isUseFaceID}
+          onValueChange={async value => {
+            if (value) {
+              try {
+                const response = await TouchId.authenticate(
+                  'to demo this react-native component',
+                );
+                if (!!response) {
+                  await asyncStorageService.setIsUseFaceID(value);
+                  refetch();
+                }
+              } catch (error: any) {
+                console.log('error', error);
+                toast.show({
+                  type: 'error',
+                  content: 'Không hỗ trợ FaceID/TouchID',
+                });
+              }
+            }
+          }}
+        />
       </View>
 
       <View

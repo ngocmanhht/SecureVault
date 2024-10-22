@@ -31,7 +31,7 @@ class AsyncStorageService {
   getIsUseFaceID = async () => {
     const value = await AsyncStorage.getItem('isUseFaceID');
     if (value !== null) {
-      return JSON.parse(value);
+      return !!JSON.parse(value);
     }
     return false;
   };
