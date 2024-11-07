@@ -17,8 +17,6 @@ export const Item = ({
   item: Note;
   onItemPress: () => void;
 }) => {
-  console.log('item', item);
-
   const content = useMemo(() => {
     switch (item.noteType) {
       case NoteType.Password:

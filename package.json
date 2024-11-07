@@ -27,6 +27,7 @@
     "react": "18.2.0",
     "react-hook-form": "^7.53.0",
     "react-native": "0.74.1",
+    "react-native-aes-crypto": "^3.0.3",
     "react-native-asset": "^2.1.1",
     "react-native-awesome-gallery": "^0.4.2",
     "react-native-blob-util": "^0.19.6",

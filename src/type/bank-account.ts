@@ -14,4 +14,7 @@ export interface IBankAccount {
   expiredDay: string;
   images?: string;
   userid?: any;
+  isEncrypt?: boolean;
+  iv?: string;
+  createdAt: string;
 }

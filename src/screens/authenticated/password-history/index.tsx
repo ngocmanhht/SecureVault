@@ -11,6 +11,9 @@ import { appStyles, Colors, FontSizes, Padding } from '../../../assets/styles';
 import { Text } from '../../../components/text';
 import { Icon, Snackbar } from 'react-native-paper';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { useQuery } from '@tanstack/react-query';
+import { asyncStorageService } from '../../../service/async-storage';
+import moment from 'moment';
 
 const PasswordHistory = () => {
   const [password, setPassword] = useState('');
@@ -19,6 +22,11 @@ const PasswordHistory = () => {
   const onToggleSnackBar = () => setVisible(true);
 
   const onDismissSnackBar = () => setVisible(false);
+
+  const { data } = useQuery({
+    queryKey: ['getPasswordHistory'],
+    queryFn: () => asyncStorageService.getGeneratedPasswordHistory(),
+  });
   return (
     <SafeAreaView
       style={{
@@ -50,6 +58,9 @@ const PasswordHistory = () => {
                 {
                   text: 'Xóa',
                   style: 'destructive',
+                  onPress: async () => {
+                    await asyncStorageService.clearMasterPasswordHistory();
+                  },
                 },
               ]);
             }}>
@@ -58,7 +69,7 @@ const PasswordHistory = () => {
         </View>
 
         <FlatList
-          data={[0, 1, 2, 3]}
+          data={data}
           style={{ flex: 1 }}
           contentContainerStyle={{
             gap: 10,
@@ -115,9 +126,11 @@ const PasswordHistory = () => {
                 appStyles.shadowStyle,
               ]}>
               <View style={{ gap: 5 }}>
-                <Text style={{ fontSize: FontSizes.content }}>abcd1231</Text>
                 <Text style={{ fontSize: FontSizes.content }}>
-                  12:30 06/09/2024
+                  {item.value ?? ''}
+                </Text>
+                <Text style={{ fontSize: FontSizes.content }}>
+                  {moment(item.createdAt).format('HH:mm DD/MM//YYYY')}
                 </Text>
               </View>
               <Icon color={Colors.primary} size={25} source={'content-copy'} />

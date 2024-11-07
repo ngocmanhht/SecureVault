@@ -3,8 +3,15 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Colors } from '../../../assets/styles';
 import { StepOne } from './StepOne';
 import StepTwo from './StepTwo';
+import { useRoute } from '@react-navigation/native';
 
 export const RegisterSuccess = () => {
+  const route = useRoute();
+  const params = route.params as {
+    email: string;
+    password: string;
+    uid: string;
+  };
   const [step, setStep] = useState(1);
   useEffect(() => {
     setTimeout(() => {

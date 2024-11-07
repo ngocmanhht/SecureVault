@@ -14,6 +14,9 @@ export interface INote {
   images?: string;
   userid?: any;
   id: number;
+  isEncrypt?: boolean;
+  iv?: string;
+  createdAt: string;
 }
 
 export interface Note {
@@ -38,4 +41,6 @@ export interface Note {
   updateAt: string;
   userid: string;
   url: string;
+  isEncrypt?: boolean;
+  iv?: string;
 }

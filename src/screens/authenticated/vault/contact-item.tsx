@@ -3,6 +3,7 @@ import React from 'react';
 import { Icon, Divider } from 'react-native-paper';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { FontSizes } from '../../../assets/styles';
+import moment from 'moment';
 
 const ContactItem = ({
   item,
@@ -38,6 +39,12 @@ const ContactItem = ({
                 fontWeight: 'bold',
               }}>
               {'Generated Password on Mobile'}
+            </Text>
+            <Text
+              style={{
+                color: Colors.gray500,
+              }}>
+              {`${moment(item?.createdAt).format('HH:mm DD/MM/YYYY')}`}
             </Text>
             <Text
               style={{

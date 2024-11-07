@@ -14,6 +14,7 @@ import { useMutation } from '@tanstack/react-query';
 import useCustomToast from '../../../hooks/use-toast';
 import { Controller, useForm } from 'react-hook-form';
 import { NoteType } from '../../../type/note';
+import { aesService } from '../../../ultils/aes';
 export const AddPassword = ({ initialValue }: { initialValue?: IPassword }) => {
   const data = [
     { label: 'Facebook', value: 'Facebook', icon: 'facebook' },
@@ -39,7 +40,10 @@ export const AddPassword = ({ initialValue }: { initialValue?: IPassword }) => {
     setValue,
     formState: { isDirty },
   } = useForm<IPassword>({
-    defaultValues: {},
+    defaultValues: {
+      isRequireMasterPassword: false,
+      isEncrypt: false,
+    },
   });
   const getColors = (label: string) => {
     switch (label) {
@@ -94,32 +98,57 @@ export const AddPassword = ({ initialValue }: { initialValue?: IPassword }) => {
 
   const onSubmit = async (data: IPassword) => {
     const uid = await supabaseService.getUid();
-    const test: IPassword = {
+
+    const body: IPassword = {
       ...data,
       userid: uid,
       noteType: NoteType.Password,
     };
-    console.log('aaa', data);
+    if (data.isEncrypt) {
+      const iv = await aesService.generateIv();
+      const aa = await aesService.encryptData(body.userName, iv);
+      body.iv = iv;
+      body.userName = aa;
+      body.password = await aesService.encryptData(body.password, iv);
+      if (!!data.notes) {
+        body.notes = await aesService.encryptData(data.notes, iv);
+      }
+    }
     if (!!initialValue) {
-      updatePasswordMutation.mutate(test);
+      updatePasswordMutation.mutate(body);
       return;
     }
-    addPasswordMutation.mutate(test);
+    addPasswordMutation.mutate(body);
   };
 
-  useEffect(() => {
+  const setInitialValue = async () => {
     if (!!initialValue) {
       for (const [key, value] of Object.entries(initialValue)) {
-        setValue(key as any, value, {
-          shouldDirty: false,
-        });
+        if (
+          initialValue.isEncrypt &&
+          (key === 'userName' || key === 'password' || key === 'notes')
+        ) {
+          const decryptedValue = await aesService.decryptData(
+            value,
+            initialValue.iv as string,
+          );
+          setValue(key as any, decryptedValue, {
+            shouldDirty: false,
+          });
+        } else {
+          setValue(key as any, value, {
+            shouldDirty: false,
+          });
+        }
+
         const item = data.find(i => i.label === initialValue?.typeAccount);
         !!item && setItem(item);
       }
     }
+  };
+  useEffect(() => {
+    setInitialValue();
   }, [initialValue]);
-  console.log('111', initialValue);
-
   return (
     <View style={{ gap: 20 }}>
       <View
@@ -324,7 +353,7 @@ export const AddPassword = ({ initialValue }: { initialValue?: IPassword }) => {
                   color: Colors.gray500,
                 }}>
                 Yêu cầu mật khẩu chính của bạn khi bạn điền, sao chép hoặc chỉnh
-                sửa tên người dùng và/hoặc mật khẩu của mình.
+                sửa tên người dùng hoặc mật khẩu của mình.
               </Text>
             </View>
             <View style={{ alignSelf: 'center' }}>
@@ -332,6 +361,33 @@ export const AddPassword = ({ initialValue }: { initialValue?: IPassword }) => {
                 value={!!watch('isRequireMasterPassword')}
                 onValueChange={val => {
                   setValue('isRequireMasterPassword', val);
+                }}
+              />
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingVertical: 10,
+              gap: 10,
+            }}>
+            <View style={{ flex: 1, gap: 5 }}>
+              <Text>Mã hóa thông tin của bạn</Text>
+              <Text
+                style={{
+                  fontSize: FontSizes.sm,
+                  color: Colors.gray500,
+                }}>
+                Secure Vault sẽ mã hóa các thông tin nhạy cảm của bạn trước khi
+                lưu trữ vào hệ thống. Và thông tin này chỉ có bạn biết
+              </Text>
+            </View>
+            <View style={{ alignSelf: 'center' }}>
+              <Switch
+                value={!!watch('isEncrypt')}
+                onValueChange={val => {
+                  setValue('isEncrypt', val);
                 }}
               />
             </View>

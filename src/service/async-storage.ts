@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AUTH_STORAGE_KEY } from '../ultils';
+import { AUTH_STORAGE_KEY, MASTER_PASSWORD_KEY } from '../ultils';
+import { Password } from '../type/password';
 
 class AsyncStorageService {
   getCountNumberOpenApp = async () => {
@@ -34,6 +35,25 @@ class AsyncStorageService {
       return !!JSON.parse(value);
     }
     return false;
+  };
+
+  getMasterPasswordFromLocal = async () => {
+    const value = await AsyncStorage.getItem(MASTER_PASSWORD_KEY);
+    return !!value ? JSON.parse(value) : null;
+  };
+  getGeneratedPasswordHistory = async () => {
+    const value = await AsyncStorage.getItem(MASTER_PASSWORD_KEY);
+    if (value !== null) {
+      return JSON.parse(value) as Array<Password>;
+    }
+    return [] as Array<Password>;
+  };
+  setMasterPasswordHistory = async (passwords: any) => {
+    const parsedPasswords = JSON.stringify(passwords);
+    await AsyncStorage.setItem(MASTER_PASSWORD_KEY, parsedPasswords);
+  };
+  clearMasterPasswordHistory = async () => {
+    await AsyncStorage.removeItem(MASTER_PASSWORD_KEY);
   };
 }
 

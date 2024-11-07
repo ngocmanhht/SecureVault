@@ -25,7 +25,7 @@ import {
 } from '@gorhom/bottom-sheet';
 import { TouchableWithoutFeedback } from 'react-native';
 import { Item } from './item';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQueries, useQuery } from '@tanstack/react-query';
 import { supabaseService } from '../../../supabase';
 import { Note, NoteType } from '../../../type/note';
 import { set } from 'mobx';
@@ -35,6 +35,9 @@ import useStores from '../../../hooks/use-stores';
 import Clipboard from '@react-native-clipboard/clipboard';
 import TouchID from 'react-native-touch-id';
 import useCustomToast from '../../../hooks/use-toast';
+import { aesService } from '../../../ultils/aes';
+import { observer } from 'mobx-react';
+import SessionStore from '../../../stores/session';
 export const category = [
   {
     id: 1,
@@ -62,12 +65,12 @@ export const category = [
     icon: 'bank-outline',
   },
 ];
-const Vault = () => {
+const Vault = observer(() => {
   const isFocused = useIsFocused();
   const [note, setNote] = useState<Note | null>(null);
   const [tabIndex, setTabIndex] = useState(1);
   const uiStore: UIStore = useStores().uiStore;
-
+  const sessionStore: SessionStore = useStores().sessionStore;
   const filterTabTitle = useMemo(() => {
     switch (tabIndex) {
       case 2:
@@ -169,6 +172,55 @@ const Vault = () => {
     },
   });
 
+  const promptEnterMasterPassword = (nameScreens: Screens, params: any) => {
+    Alert.prompt(
+      'Master password',
+      'Hãy nhập master password để có thể xem chi tiết',
+      async text => {
+        const hashedPassword = await aesService.hashSHA512(text);
+        const isEqual = await supabaseService.compareMasterPassword(
+          hashedPassword,
+        );
+        if (isEqual) {
+          navigation.navigate({
+            name: nameScreens,
+            params: params,
+          } as never);
+        } else {
+          toast.show({
+            type: 'error',
+            title: 'Master password không đúng ',
+            content: '',
+          });
+        }
+      },
+      'secure-text',
+    );
+  };
+  const { autoLogoutTime } = sessionStore.settings;
+
+  const onSeeDetailPress = async (nameScreens: Screens, params: any) => {
+    const isSupported = await TouchID.isSupported();
+    console.log('isSupported', isSupported);
+    if (isSupported === 'FaceID' || isSupported === 'TouchID') {
+      try {
+        const response = await TouchID.authenticate();
+        if (!!response) {
+          navigation.navigate({
+            name: nameScreens,
+            params: params,
+          } as never);
+        } else {
+          promptEnterMasterPassword(nameScreens, params);
+        }
+      } catch (error) {
+        promptEnterMasterPassword(nameScreens, params);
+      }
+    } else {
+      promptEnterMasterPassword(nameScreens, params);
+    }
+  };
+
   const toast = useCustomToast();
   const onDeletePress = async () => {
     try {
@@ -255,9 +307,7 @@ const Vault = () => {
                   backgroundColor: '#F1F3FD',
                 }}
                 placeholder='Tìm kiếm...'
-                onIconPress={() => {
-                  console.log('1312');
-                }}
+                onIconPress={() => {}}
                 value=''
                 inputStyle={{ alignSelf: 'center' }}
               />
@@ -285,7 +335,6 @@ const Vault = () => {
                       },
                     }}
                     onPress={() => {
-                      console.log('Pressed');
                       setTabIndex(item.id);
                     }}>
                     {item.name}
@@ -319,7 +368,6 @@ const Vault = () => {
                           setTimeout(() => {
                             handlePresentModalPress();
                           }, 1000);
-                          console.log('121');
                         }}
                       />
                     </>
@@ -453,13 +501,11 @@ const Vault = () => {
                 <MButton
                   onPress={() => {
                     handleCloseModalPress();
-                    navigation.navigate({
-                      name: Screens.Add,
-                      params: {
-                        type: NoteType.Password,
-                        item: note,
-                      },
-                    } as never);
+                    const params = {
+                      type: NoteType.Password,
+                      item: note,
+                    };
+                    onSeeDetailPress(Screens.Add, params);
                   }}
                   title='Xem'
                   rightIcon='launch'
@@ -467,13 +513,11 @@ const Vault = () => {
                 <MButton
                   onPress={() => {
                     handleCloseModalPress();
-                    navigation.navigate({
-                      name: Screens.Add,
-                      params: {
-                        type: NoteType.Password,
-                        item: note,
-                      },
-                    } as never);
+                    const params = {
+                      type: NoteType.Password,
+                      item: note,
+                    };
+                    onSeeDetailPress(Screens.Add, params);
                   }}
                   title='Sửa'
                   rightIcon='pencil'
@@ -510,13 +554,11 @@ const Vault = () => {
                 <MButton
                   onPress={() => {
                     handleCloseModalPress();
-                    navigation.navigate({
-                      name: Screens.Add,
-                      params: {
-                        type: NoteType.Note,
-                        item: note,
-                      },
-                    } as never);
+                    const params = {
+                      type: NoteType.Note,
+                      item: note,
+                    };
+                    onSeeDetailPress(Screens.Add, params);
                   }}
                   title='Xem'
                   rightIcon='launch'
@@ -524,13 +566,11 @@ const Vault = () => {
                 <MButton
                   onPress={() => {
                     handleCloseModalPress();
-                    navigation.navigate({
-                      name: Screens.Add,
-                      params: {
-                        type: NoteType.Note,
-                        item: note,
-                      },
-                    } as never);
+                    const params = {
+                      type: NoteType.Note,
+                      item: note,
+                    };
+                    onSeeDetailPress(Screens.Add, params);
                   }}
                   title='Sửa'
                   rightIcon='pencil'
@@ -569,13 +609,11 @@ const Vault = () => {
                 <MButton
                   onPress={() => {
                     handleCloseModalPress();
-                    navigation.navigate({
-                      name: Screens.Add,
-                      params: {
-                        type: NoteType.BankAccount,
-                        item: note,
-                      },
-                    } as never);
+                    const params = {
+                      type: NoteType.BankAccount,
+                      item: note,
+                    };
+                    onSeeDetailPress(Screens.Add, params);
                   }}
                   title='Xem'
                   rightIcon='launch'
@@ -583,13 +621,11 @@ const Vault = () => {
                 <MButton
                   onPress={() => {
                     handleCloseModalPress();
-                    navigation.navigate({
-                      name: Screens.Add,
-                      params: {
-                        type: NoteType.BankAccount,
-                        item: note,
-                      },
-                    } as never);
+                    const params = {
+                      type: NoteType.BankAccount,
+                      item: note,
+                    };
+                    onSeeDetailPress(Screens.Add, params);
                   }}
                   title='Sửa'
                   rightIcon='pencil'
@@ -607,7 +643,7 @@ const Vault = () => {
       </BottomSheetModal>
     </>
   );
-};
+});
 
 const MButton = ({
   rightIcon,

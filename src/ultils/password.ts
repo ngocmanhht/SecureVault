@@ -18,7 +18,6 @@ export class PasswordUtils {
   }
 
   generatePassword = (passwordLength: number) => {
-    console.log('charset', this.charset);
     let newPassword: string = '';
     for (let i = 0; i < passwordLength; i++) {
       newPassword += this.charset.charAt(

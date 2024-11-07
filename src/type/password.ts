@@ -20,4 +20,12 @@ export interface IPassword {
   notes?: string;
   isRequireMasterPassword?: boolean;
   noteType?: NoteType;
+  isEncrypt?: boolean;
+  iv?: string;
+  createdAt: string;
+}
+export interface Password {
+  value: string;
+  createdAt: string;
+  id: any;
 }

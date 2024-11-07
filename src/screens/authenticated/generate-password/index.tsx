@@ -16,6 +16,7 @@ import { Icon, ProgressBar, Snackbar, Switch } from 'react-native-paper';
 import Slider from '@react-native-community/slider';
 import { LongButton } from '../../../components/long-button';
 import {
+  Password,
   PasswordGenerateOptions,
   PasswordStrength,
 } from '../../../type/password';
@@ -24,6 +25,8 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import useCustomToast from '../../../hooks/use-toast';
 import { Screens } from '../../../const';
 import { Text } from '../../../components/text';
+import { asyncStorageService } from '../../../service/async-storage';
+import moment from 'moment';
 
 export const GeneratePassword = () => {
   const navigation = useNavigation();
@@ -56,6 +59,24 @@ export const GeneratePassword = () => {
   const onToggleSnackBar = () => setVisible(true);
 
   const onDismissSnackBar = () => setVisible(false);
+  const onClipboardPress = async () => {
+    Clipboard.setString(password);
+    const passwords = await asyncStorageService.getGeneratedPasswordHistory();
+    let newPasswords = [] as Array<Password>;
+    if (!passwords.some(pass => pass.value === password)) {
+      newPasswords = [
+        ...passwords,
+        {
+          id: new Date().getTime(),
+          createdAt: moment().toString(),
+          value: password,
+        },
+      ];
+      await asyncStorageService.setMasterPasswordHistory(newPasswords);
+    }
+
+    onToggleSnackBar();
+  };
   return (
     <SafeAreaView
       style={{
@@ -169,11 +190,7 @@ export const GeneratePassword = () => {
               }}>
               <Icon size={25} source={'refresh'} />
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                Clipboard.setString(password);
-                onToggleSnackBar();
-              }}>
+            <TouchableOpacity onPress={onClipboardPress}>
               <Icon size={25} source={'content-copy'} />
             </TouchableOpacity>
           </View>

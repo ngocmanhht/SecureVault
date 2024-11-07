@@ -6,6 +6,8 @@ import { appStyles, Colors, FontSizes, Padding } from '../../../assets/styles';
 import { Text } from '../../../components/text';
 import { LongButton } from '../../../components/long-button';
 import { Divider, Icon } from 'react-native-paper';
+import useStores from '../../../hooks/use-stores';
+import SessionStore from '../../../stores/session';
 
 export const Options = () => {
   const route = useRoute();
@@ -49,41 +51,45 @@ export const Options = () => {
 const LockOptions = () => {
   const data = [
     {
-      id: 1,
-      label: 'Ngay lập tức',
-    },
-    {
       id: 2,
       label: '1 phút',
+      value: 60000,
     },
     {
       id: 3,
       label: '3 phút',
+      value: 60000 * 3,
     },
     {
       id: 4,
       label: '5 phút',
+      value: 60000 * 5,
     },
     {
       id: 5,
       label: '15 phút',
+      value: 60000 * 15,
     },
     {
       id: 6,
       label: '1 giờ',
+      value: 60000 * 60,
     },
     {
       id: 7,
       label: '24 giờ',
+      value: 24 * 60000 * 60,
     },
     {
       id: 8,
       label: 'Không bao giờ',
+      value: 0,
     },
   ];
 
   const [selectedIndex, setSelectedIndex] = useState(2);
   const navigation = useNavigation();
+  const sessionStore: SessionStore = useStores().sessionStore;
   return (
     <View style={{ flex: 1, gap: 15 }}>
       <View style={[{ padding: 10 }, appStyles.shadowStyle]}>
@@ -119,6 +125,8 @@ const LockOptions = () => {
         buttonStyle={{ width: '100%' }}
         title='Lưu'
         onPress={() => {
+          const value = data[selectedIndex].value;
+          sessionStore.changeLockOption(value);
           navigation.goBack();
         }}
       />
@@ -131,38 +139,48 @@ const LockOptions = () => {
 };
 
 const SkipRepromptOptions = () => {
+  const sessionStore: SessionStore = useStores().sessionStore;
+
   const data = [
     {
       id: 1,
       label: 'Vô hiệu hóa',
+      value: 0,
     },
     {
       id: 2,
       label: '1 phút',
+      value: 60000,
     },
     {
       id: 3,
       label: '2 phút',
+      value: 60000 * 2,
     },
     {
       id: 4,
       label: '3 phút',
+      value: 60000 * 3,
     },
     {
       id: 5,
       label: '4 phút',
+      value: 60000 * 4,
     },
     {
       id: 6,
       label: '5 phút',
+      value: 60000 * 5,
     },
     {
       id: 7,
       label: '10 phút',
+      value: 60000 * 10,
     },
     {
       id: 8,
       label: '20 phút',
+      value: 60000 * 20,
     },
   ];
 
@@ -203,6 +221,8 @@ const SkipRepromptOptions = () => {
         buttonStyle={{ width: '100%' }}
         title='Lưu'
         onPress={() => {
+          const value = data[selectedIndex].value;
+          sessionStore.changeSkipPrompt(value);
           navigation.goBack();
         }}
       />
@@ -215,30 +235,37 @@ const SkipRepromptOptions = () => {
 };
 
 const LogOutOptions = () => {
+  const sessionStore: SessionStore = useStores().sessionStore;
   const data = [
     {
       id: 1,
       label: 'Không bao giờ',
+      value: 0,
     },
     {
       id: 2,
       label: '1 phút',
+      value: 1 * 60000,
     },
     {
       id: 3,
       label: '5 phút',
+      value: 5 * 60000,
     },
     {
       id: 4,
       label: '15 phút',
+      value: 15 * 60000,
     },
     {
       id: 5,
       label: '1 giờ',
+      value: 60 * 60000,
     },
     {
       id: 6,
       label: '8 giờ',
+      value: 60 * 60000 * 8,
     },
   ];
 
@@ -279,6 +306,8 @@ const LogOutOptions = () => {
         buttonStyle={{ width: '100%' }}
         title='Lưu'
         onPress={() => {
+          const value = data[selectedIndex].value;
+          sessionStore.changeAutoLogoutTime(value);
           navigation.goBack();
         }}
       />
@@ -295,23 +324,28 @@ const ClearClipboardOptions = () => {
     {
       id: 1,
       label: 'Không bao giờ',
+      value: 0,
     },
     {
       id: 2,
       label: '30 giây',
+      value: 60000 / 2,
     },
     {
       id: 3,
       label: '45 giây',
+      value: 60000 * 0.75,
     },
     {
       id: 4,
       label: '60 giây',
+      value: 60000,
     },
   ];
 
   const [selectedIndex, setSelectedIndex] = useState(2);
   const navigation = useNavigation();
+  const sessionStore: SessionStore = useStores().sessionStore;
   return (
     <View style={{ flex: 1, gap: 15 }}>
       <View style={[{ padding: 10 }, appStyles.shadowStyle]}>
@@ -347,6 +381,8 @@ const ClearClipboardOptions = () => {
         buttonStyle={{ width: '100%' }}
         title='Lưu'
         onPress={() => {
+          const value = data[selectedIndex].value;
+          sessionStore.changeAutoClearClipBoard(value);
           navigation.goBack();
         }}
       />

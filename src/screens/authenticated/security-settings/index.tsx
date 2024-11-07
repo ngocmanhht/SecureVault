@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { appStyles, Colors, Padding } from '../../../assets/styles';
 import { Divider, Icon, Switch } from 'react-native-paper';
 import { Text } from '../../../components/text';
@@ -10,7 +10,10 @@ import { useQuery } from '@tanstack/react-query';
 import { asyncStorageService } from '../../../service/async-storage';
 import TouchId from 'react-native-touch-id';
 import useCustomToast from '../../../hooks/use-toast';
-export const SecuritySettings = () => {
+import { observer } from 'mobx-react';
+import SessionStore from '../../../stores/session';
+import useStores from '../../../hooks/use-stores';
+export const SecuritySettings = observer(() => {
   const navigation = useNavigation();
   const onOptionsPress = (option: OptionType) => {
     navigation.navigate({
@@ -20,6 +23,40 @@ export const SecuritySettings = () => {
       },
     } as never);
   };
+  const sessionStore: SessionStore = useStores().sessionStore;
+  const { autoLogoutTime, autoClearClipBoard, lockOption, skipPrompt } =
+    sessionStore.settings;
+  const convertMsToMinutes = (ms: number) => {
+    const minutes = (ms / 60000).toFixed(0);
+    return `${minutes} phút`;
+  };
+  const logOutTime = useMemo(() => {
+    if (autoLogoutTime === 0) {
+      return 'Không bao giờ';
+    }
+    return convertMsToMinutes(autoLogoutTime);
+  }, [autoLogoutTime]);
+
+  const clearClipBoardTime = useMemo(() => {
+    if (autoClearClipBoard === 0) {
+      return 'Không bao giờ';
+    }
+    return convertMsToMinutes(autoClearClipBoard);
+  }, [autoClearClipBoard]);
+
+  const lockOptionsTime = useMemo(() => {
+    if (lockOption === 0) {
+      return 'Không bao giờ';
+    }
+    return convertMsToMinutes(lockOption);
+  }, [lockOption]);
+
+  const skipPromptTime = useMemo(() => {
+    if (skipPrompt === 0) {
+      return 'Không bao giờ';
+    }
+    return convertMsToMinutes(skipPrompt);
+  }, [skipPrompt]);
 
   const toast = useCustomToast();
 
@@ -59,7 +96,7 @@ export const SecuritySettings = () => {
                   refetch();
                 }
               } catch (error: any) {
-                console.log('error', error);
+                console.log('error in face id', error);
                 toast.show({
                   type: 'error',
                   content: 'Không hỗ trợ FaceID/TouchID',
@@ -81,7 +118,28 @@ export const SecuritySettings = () => {
           appStyles.shadowStyle,
         ]}>
         <Text>Mở khóa bằng Face ID</Text>
-        <Switch />
+        <Switch
+          value={isUseFaceID}
+          onValueChange={async value => {
+            if (value) {
+              try {
+                const response = await TouchId.authenticate(
+                  'to demo this react-native component',
+                );
+                if (!!response) {
+                  await asyncStorageService.setIsUseFaceID(value);
+                  refetch();
+                }
+              } catch (error: any) {
+                console.log('error in face id', error);
+                toast.show({
+                  type: 'error',
+                  content: 'Không hỗ trợ FaceID/TouchID',
+                });
+              }
+            }
+          }}
+        />
       </View>
 
       <View
@@ -103,7 +161,7 @@ export const SecuritySettings = () => {
           }}>
           <Text>Tùy chọn khóa</Text>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Text>5 phút</Text>
+            <Text>{lockOptionsTime}</Text>
             <Icon size={20} source={'arrow-right'} color={Colors.gray500} />
           </View>
         </TouchableOpacity>
@@ -117,9 +175,16 @@ export const SecuritySettings = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
-          <Text>Bỏ qua nhắc nhở sau khi đăng nhập</Text>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Text>5 phút</Text>
+          <Text style={{ flex: 1 }}>Bỏ qua nhắc nhở sau khi đăng nhập</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: 10,
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+            }}>
+            <Text style={{ textAlign: 'right' }}>{skipPromptTime}</Text>
             <Icon size={20} source={'arrow-right'} color={Colors.gray500} />
           </View>
         </TouchableOpacity>
@@ -135,7 +200,7 @@ export const SecuritySettings = () => {
           }}>
           <Text>Tự động logout</Text>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Text>5 phút</Text>
+            <Text>{logOutTime}</Text>
             <Icon size={20} source={'arrow-right'} color={Colors.gray500} />
           </View>
         </TouchableOpacity>
@@ -151,7 +216,7 @@ export const SecuritySettings = () => {
           }}>
           <Text>Xóa clipboard</Text>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Text>5 phút</Text>
+            <Text>{clearClipBoardTime}</Text>
             <Icon size={20} source={'arrow-right'} color={Colors.gray500} />
           </View>
         </TouchableOpacity>
@@ -159,6 +224,6 @@ export const SecuritySettings = () => {
       </View>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({});

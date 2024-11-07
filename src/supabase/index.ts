@@ -12,6 +12,7 @@ import { IPassword } from '../type/password';
 import { error } from 'console';
 import { INote, Note, NoteType } from '../type/note';
 import { IBankAccount } from '../type/bank-account';
+import { aesService } from '../ultils/aes';
 
 class SupabaseService {
   private supabase: SupabaseClient;
@@ -67,9 +68,11 @@ class SupabaseService {
 
   getAllData = async (tableName: TableName, noteType?: NoteType | null) => {
     let query = supabase.from(tableName).select('*');
+    const uid = await this.getUid();
     query = query.order('id', {
       ascending: true,
     });
+    query = query.eq('userid', uid);
     if (noteType) {
       query = query.eq('noteType', noteType);
     }
@@ -91,7 +94,6 @@ class SupabaseService {
       return Promise.reject(error);
     }
     if (!!data) {
-      console.log('data', data);
       return Promise.resolve(data);
     }
   };
@@ -105,13 +107,11 @@ class SupabaseService {
       })
       .eq('id', id)
       .select();
-    console.log('a1k5w', data);
     if (!!error) {
       this.handleError(error);
       return Promise.reject(error);
     }
     if (!!data) {
-      console.log('data', data);
       return Promise.resolve(data);
     }
   };
@@ -134,6 +134,54 @@ class SupabaseService {
     if (!!user) {
       return user.data.user?.id;
     }
+  };
+  getUserData = async () => {
+    const user = await supabase.auth.getUser();
+    if (!!user) {
+      return user.data.user;
+    }
+  };
+
+  getMasterPassword = async (uid: string) => {
+    let query = supabase.from(TableName.MasterPasswords).select('*');
+    query = query.eq('uid', uid);
+    const { data, error } = await query;
+    if (!!!data) {
+      return null;
+    }
+    return data[0]?.password ?? null;
+  };
+  compareMasterPassword = async (plaintMasterPassword: string) => {
+    const uid = await this.getUid();
+    if (!!!uid) return false;
+    const hashedMasterPassword = await aesService.hashSHA512(
+      plaintMasterPassword,
+    );
+    const dbMasterPassword = await this.getMasterPassword(uid);
+    console.log(
+      'hased',
+      hashedMasterPassword,
+      dbMasterPassword,
+      dbMasterPassword === hashedMasterPassword,
+    );
+
+    return dbMasterPassword === hashedMasterPassword;
+  };
+  insertMasterPassword = async (uid: string, masterPassword: string) => {
+    const { data, error } = await supabase
+      .from(TableName.MasterPasswords)
+      .insert([
+        {
+          uid: uid,
+          password: masterPassword,
+        },
+      ])
+      .select();
+    if (!!error) {
+      this.handleError(error);
+      return Promise.reject(error);
+    }
+    return Promise.resolve(data);
   };
 }
 

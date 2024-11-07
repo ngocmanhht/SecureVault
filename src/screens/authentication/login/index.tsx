@@ -1,4 +1,5 @@
 import {
+  Button,
   Image,
   Keyboard,
   SafeAreaView,
@@ -25,6 +26,7 @@ import { useEffect } from 'react';
 import useCustomToast from '../../../hooks/use-toast';
 import { observer } from 'mobx-react';
 import UIStore from '../../../stores/ui';
+import { generateKey } from '../../../ultils';
 
 export const Login = observer(() => {
   const navigation = useNavigation();
@@ -180,6 +182,13 @@ export const Login = observer(() => {
               </Text>
             </TouchableOpacity>
           </View>
+          {/* <Button
+            title='gen'
+            onPress={async () => {
+              const val = await generateKey('Admin123@', 'abc123@');
+              console.log('val', val);
+            }}
+          /> */}
           <View
             style={{
               justifyContent: 'center',

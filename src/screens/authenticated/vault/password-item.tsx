@@ -5,6 +5,7 @@ import { Divider, Icon } from 'react-native-paper';
 import { Colors } from '../../../assets/styles/colors';
 import { FontSizes } from '../../../assets/styles/typography';
 import { Note } from '../../../type/note';
+import moment from 'moment';
 
 export const getColors = (label: string) => {
   switch (label) {
@@ -87,6 +88,12 @@ const PasswordItem = ({
                 fontWeight: 'bold',
               }}>
               {'Generated Password on Mobile'}
+            </Text>
+            <Text
+              style={{
+                color: Colors.gray500,
+              }}>
+              {`${moment(item?.createdAt).format('HH:mm DD/MM/YYYY')}`}
             </Text>
             <Text
               style={{

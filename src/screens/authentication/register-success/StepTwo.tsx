@@ -14,7 +14,11 @@ const StepTwo = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const params = route.params as {
-    profile: { email: string; password: string };
+    profile: {
+      email: string;
+      password: string;
+      uid: string;
+    };
   };
   const storageLoginProfile = async (username: string, password: string) => {
     // Store the credentials

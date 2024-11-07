@@ -22,6 +22,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Screens } from '../../../const';
 import { useMutation } from '@tanstack/react-query';
 import { supabaseService } from '../../../supabase';
+import { aesService } from '../../../ultils/aes';
 
 export const Register = () => {
   const { handleSubmit, control, getValues, watch } = useForm({
@@ -39,17 +40,29 @@ export const Register = () => {
   const registerMutation = useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       supabaseService.signUpWithEmail(email, password),
-    onSuccess: () => {
+    onSuccess: async data => {
       const profile = {
         email,
         password,
+        uid: data.user?.id,
       };
-      navigation.navigate({
-        name: Screens.RegisterSuccess,
-        params: {
-          profile,
-        },
-      } as never);
+      const uid = data.user?.id;
+      if (!!uid) {
+        const hashedPassword = await aesService.hashSHA512(profile.password);
+
+        const response = await supabaseService.insertMasterPassword(
+          uid,
+          hashedPassword,
+        );
+        if (!!response) {
+          navigation.navigate({
+            name: Screens.RegisterSuccess,
+            params: {
+              profile,
+            },
+          } as never);
+        }
+      }
     },
   });
 
@@ -80,6 +93,7 @@ export const Register = () => {
               flex: 1,
               padding: Padding.screen,
               gap: 10,
+              marginBottom: 20,
             },
             appStyles.shadowStyle,
           ]}>
@@ -91,7 +105,7 @@ export const Register = () => {
               resizeMode: 'contain',
               borderRadius: 20,
               alignSelf: 'center',
-              marginBottom: 10,
+              // marginBottom: 10,
             }}
             source={Icons.Logo}
           />
@@ -144,7 +158,26 @@ export const Register = () => {
               )}
             />
           </View>
-
+          <View
+            style={{
+              padding: 15,
+              gap: 5,
+            }}>
+            <Text
+              style={{
+                fontSize: FontSizes.xl,
+                fontWeight: 'bold',
+              }}>
+              Hãy nhập mật khẩu master của bạn
+            </Text>
+            <Text
+              style={{
+                fontSize: FontSizes.sm,
+                color: Colors.gray500,
+              }}>
+              *Chọn một cái gì đó đáng nhớ mà bạn không sử dụng ở nơi khác.
+            </Text>
+          </View>
           <View style={{ paddingHorizontal: 15 }}>
             <Controller
               name='password'
@@ -163,7 +196,7 @@ export const Register = () => {
                     value={value}
                     onBlur={onBlur}
                     onChangeText={onChange}
-                    label='Mật khẩu'
+                    label='Mật khẩu master'
                   />
                   {!!error && (
                     <Text
@@ -198,7 +231,7 @@ export const Register = () => {
                     onBlur={onBlur}
                     value={value}
                     onChangeText={onChange}
-                    label='Nhập lại mật khẩu'
+                    label='Nhập lại mật khẩu master'
                   />
                   {!!error && (
                     <Text
@@ -216,7 +249,7 @@ export const Register = () => {
           </View>
           <View style={{ paddingHorizontal: 15, marginTop: 5 }}>
             <Text style={{ color: Colors.gray600 }}>
-              Yêu cầu tối thiếu đối với mật khẩu
+              Yêu cầu tối thiếu đối với mật khẩu master
             </Text>
 
             <CheckBoxWithLabel
@@ -251,24 +284,22 @@ export const Register = () => {
             />
           </View>
         </View>
-
-        <View style={{ gap: 10 }}>
-          <LongButton
-            buttonColor={Colors.red}
-            textColor='white'
-            onPress={handleSubmit(({ email, password, rePassword }) => {
-              const value = {
-                email,
-                password,
-                rePassword,
-              };
-              onSubmit(value);
-            })}
-            title='Tiếp theo'
-          />
-        </View>
       </ScrollView>
-
+      <View style={{ gap: 10 }}>
+        <LongButton
+          buttonColor={Colors.red}
+          textColor='white'
+          onPress={handleSubmit(({ email, password, rePassword }) => {
+            const value = {
+              email,
+              password,
+              rePassword,
+            };
+            onSubmit(value);
+          })}
+          title='Tiếp theo'
+        />
+      </View>
       {/* <Text>{password || 'Password'}</Text>
 
       <Button onPress={() => generatePassword()} title='Generate Password' /> */}

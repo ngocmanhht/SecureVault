@@ -3,6 +3,7 @@ import React from 'react';
 import { INote } from '../../../type/note';
 import { Icon, Divider } from 'react-native-paper';
 import { Colors, FontSizes } from '../../../assets/styles';
+import moment from 'moment';
 
 const NoteItem = ({
   item,
@@ -31,6 +32,12 @@ const NoteItem = ({
           }}>
           <Icon color={Colors.gray500} size={30} source={'note'} />
           <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                color: Colors.gray500,
+              }}>
+              {`${moment(item?.createdAt).format('HH:mm DD/MM/YYYY')}`}
+            </Text>
             <Text
               style={{
                 color: Colors.gray500,

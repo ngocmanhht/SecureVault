@@ -3983,6 +3983,7 @@ __metadata:
     react: 18.2.0
     react-hook-form: ^7.53.0
     react-native: 0.74.1
+    react-native-aes-crypto: ^3.0.3
     react-native-asset: ^2.1.1
     react-native-awesome-gallery: ^0.4.2
     react-native-blob-util: ^0.19.6
@@ -9465,6 +9466,13 @@ __metadata:
   version: 17.0.2
   resolution: "react-is@npm:17.0.2"
   checksum: 9d6d111d8990dc98bc5402c1266a808b0459b5d54830bbea24c12d908b536df7883f268a7868cfaedde3dd9d4e0d574db456f84d2e6df9c4526f99bb4b5344d8
+  languageName: node
+  linkType: hard
+
+"react-native-aes-crypto@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "react-native-aes-crypto@npm:3.0.3"
+  checksum: c455ca0a4212f3178ffea1f14b385f09bb5c9733965e1cde39f56bfe24a1c7fded1cfa8162bf0f9650cf0a1ec1f2f02d4953147e18b3ac10bc6b62f9983ad64c
   languageName: node
   linkType: hard
 

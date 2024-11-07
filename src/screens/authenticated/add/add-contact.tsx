@@ -89,7 +89,6 @@ export const AddContact = () => {
           textColor={Colors.white}
           title='Lưu'
           onPress={() => {
-            console.log(12221);
             navigation.navigate(Screens.Vault as never);
           }}
           buttonStyle={{
