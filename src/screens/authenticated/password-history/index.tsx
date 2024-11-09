@@ -14,6 +14,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { useQuery } from '@tanstack/react-query';
 import { asyncStorageService } from '../../../service/async-storage';
 import moment from 'moment';
+import { useIsFocused } from '@react-navigation/native';
 
 const PasswordHistory = () => {
   const [password, setPassword] = useState('');
@@ -22,10 +23,11 @@ const PasswordHistory = () => {
   const onToggleSnackBar = () => setVisible(true);
 
   const onDismissSnackBar = () => setVisible(false);
-
+  const isFocused = useIsFocused();
   const { data } = useQuery({
-    queryKey: ['getPasswordHistory'],
+    queryKey: ['getPasswordHistory', isFocused],
     queryFn: () => asyncStorageService.getGeneratedPasswordHistory(),
+    enabled: isFocused,
   });
   return (
     <SafeAreaView
@@ -111,8 +113,8 @@ const PasswordHistory = () => {
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => {
-                Clipboard.setString('abcd1231');
-                setPassword('abcd1231');
+                Clipboard.setString(item.value);
+                setPassword(item.value);
                 onToggleSnackBar();
               }}
               style={[

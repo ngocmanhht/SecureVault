@@ -158,13 +158,7 @@ class SupabaseService {
       plaintMasterPassword,
     );
     const dbMasterPassword = await this.getMasterPassword(uid);
-    console.log(
-      'hased',
-      hashedMasterPassword,
-      dbMasterPassword,
-      dbMasterPassword === hashedMasterPassword,
-    );
-
+    console.log('hased', hashedMasterPassword);
     return dbMasterPassword === hashedMasterPassword;
   };
   insertMasterPassword = async (uid: string, masterPassword: string) => {
@@ -177,6 +171,32 @@ class SupabaseService {
         },
       ])
       .select();
+    if (!!error) {
+      this.handleError(error);
+      return Promise.reject(error);
+    }
+    return Promise.resolve(data);
+  };
+  updateMasterPassword = async (plaintMasterPassword: string) => {
+    const hashedMasterPassword = await aesService.hashSHA512(
+      plaintMasterPassword,
+    );
+    const uid = await this.getUid();
+    const { data, error } = await supabase
+      .from(TableName.MasterPasswords)
+      .update({ password: hashedMasterPassword })
+      .eq('uid', uid)
+      .select();
+    if (!!error) {
+      this.handleError(error);
+      return Promise.reject(error);
+    }
+    return Promise.resolve(data);
+  };
+  changePassword = async (password: string) => {
+    const { data, error } = await supabase.auth.updateUser({
+      password: password,
+    });
     if (!!error) {
       this.handleError(error);
       return Promise.reject(error);

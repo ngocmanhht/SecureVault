@@ -177,10 +177,7 @@ const Vault = observer(() => {
       'Master password',
       'Hãy nhập master password để có thể xem chi tiết',
       async text => {
-        const hashedPassword = await aesService.hashSHA512(text);
-        const isEqual = await supabaseService.compareMasterPassword(
-          hashedPassword,
-        );
+        const isEqual = await supabaseService.compareMasterPassword(text);
         if (isEqual) {
           navigation.navigate({
             name: nameScreens,
