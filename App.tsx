@@ -101,38 +101,6 @@ function App(): JSX.Element {
           </Provider>
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
-      {/* {appStateVisible === 'active' ? (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Provider {...stores}>
-            <QueryClientProvider client={queryClient}>
-              <PaperProvider>
-                <NavigationContainer ref={navigationService.navigationRef}>
-                  <AppNavigator />
-                  <LoadingIndicator />
-                </NavigationContainer>
-              </PaperProvider>
-              <Toast />
-            </QueryClientProvider>
-          </Provider>
-        </GestureHandlerRootView>
-      ) : (
-        <View
-          style={{
-            backgroundColor: Colors.red,
-            flex: 1,
-            justifyContent: 'center',
-          }}>
-          <Text
-            style={{
-              fontWeight: 'bold',
-              fontSize: FontSizes.xxl,
-              color: 'white',
-              alignSelf: 'center',
-            }}>
-            Secure Vault
-          </Text>
-        </View>
-      )} */}
     </>
   ) : (
     <></>

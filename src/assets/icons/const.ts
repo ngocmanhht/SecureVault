@@ -18,4 +18,9 @@ export const Icons = {
   EmptyNote: require('./empty-note.png'),
   EmptyPassword: require('./empty-password.png'),
   Generate: require('./generate.png'),
+  Plane: require('./plane.png'),
+  Access: require('./access.png'),
+  Share: require('./share.png'),
+  Computer: require('./computer.png'),
+  Technical: require('./technical.png'),
 };

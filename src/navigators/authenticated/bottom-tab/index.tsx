@@ -56,6 +56,7 @@ const BottomTabs = () => {
             <Icon source={focused ? Icons.ActiveDiamond : Icons.Diamond} />
           ),
           headerTitle: 'Nâng cấp',
+          headerShown: false,
         }}
         name={Screens.Update}
         component={Update}

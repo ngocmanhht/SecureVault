@@ -19,7 +19,6 @@ export const AuthenticatedNavigator = observer(() => {
   const { refetch: logOut } = useQuery({
     queryKey: ['autoLogOutTime'],
     queryFn: async () => {
-      console.log('lohOut1');
       await supabaseService.logOut();
       return true;
     },
@@ -29,7 +28,6 @@ export const AuthenticatedNavigator = observer(() => {
   const { refetch: clearClipBoard } = useQuery({
     queryKey: ['autoClearClipBoard'],
     queryFn: async () => {
-      console.log('lohOut1');
       Clipboard.setString('');
       return true;
     },

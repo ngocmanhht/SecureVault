@@ -92,7 +92,9 @@ export const SecuritySettings = observer(() => {
                   'to demo this react-native component',
                 );
                 if (!!response) {
-                  await asyncStorageService.setIsUseFaceID(value);
+                  await asyncStorageService.setIsUseFaceID(
+                    !!isUseFaceID ? false : true,
+                  );
                   refetch();
                 }
               } catch (error: any) {
@@ -127,7 +129,9 @@ export const SecuritySettings = observer(() => {
                   'to demo this react-native component',
                 );
                 if (!!response) {
-                  await asyncStorageService.setIsUseFaceID(value);
+                  await asyncStorageService.setIsUseFaceID(
+                    !!isUseFaceID ? false : true,
+                  );
                   refetch();
                 }
               } catch (error: any) {

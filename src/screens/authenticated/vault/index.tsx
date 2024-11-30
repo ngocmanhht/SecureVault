@@ -38,6 +38,7 @@ import useCustomToast from '../../../hooks/use-toast';
 import { aesService } from '../../../ultils/aes';
 import { observer } from 'mobx-react';
 import SessionStore from '../../../stores/session';
+import { RefreshControl } from 'react-native-gesture-handler';
 export const category = [
   {
     id: 1,
@@ -249,6 +250,16 @@ const Vault = observer(() => {
       });
     }
   };
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
   return (
     <>
       <SafeAreaView style={{ backgroundColor: Colors.white, flex: 1 }}>
@@ -312,7 +323,16 @@ const Vault = observer(() => {
 
             <FlatList
               data={category}
+              bounces
               showsHorizontalScrollIndicator={false}
+              refreshControl={
+                <RefreshControl
+                  colors={['red']} // for android
+                  tintColor={'red'}
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                />
+              }
               contentContainerStyle={{
                 gap: 5,
                 maxHeight: 40,
