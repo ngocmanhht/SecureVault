@@ -15,6 +15,7 @@ export enum Screens {
   SecurityStackNavigator = 'SecurityStackNavigator',
   GeneratePassword = 'GeneratePassword',
   PasswordHistory = 'PasswordHistory',
+  PasswordEvaluate = 'PasswordEvaluate',
   SettingsStackNavigator = 'SettingsStackNavigator',
   Account = 'Account',
   ChangePassword = 'ChangePassword',

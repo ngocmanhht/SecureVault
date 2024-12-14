@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Screens } from '../../../const';
 
 const Security = () => {
+  const navigation = useNavigation();
   return (
     <SafeAreaView
       style={{
@@ -37,8 +38,41 @@ const Security = () => {
           Công cụ bảo mật
         </Text>
 
-        <View style={{ flex: 1, paddingVertical: 15 }}>
+        <View style={{ flex: 1, paddingVertical: 15, gap: 30 }}>
           <ToolButton />
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate(Screens.PasswordEvaluate as never);
+            }}
+            style={[
+              appStyles.shadowStyle,
+              {
+                padding: 15,
+                borderRadius: 5,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 10,
+              },
+            ]}>
+            <Image
+              style={{ width: 40, height: undefined, aspectRatio: 1 }}
+              source={Icons.Generate}
+            />
+            <View style={{ flex: 1, gap: 5 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: FontSizes.lg }}>
+                Kiểm tra bảo mật
+              </Text>
+              <Text
+                style={{
+                  fontSize: FontSizes.md,
+                  color: Colors.gray500,
+                }}>
+                Kiểm tra mật khẩu của bạn đã đủ mạnh hay chưa
+              </Text>
+            </View>
+            <Icon size={20} source={'arrow-right'} color={Colors.gray500} />
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>

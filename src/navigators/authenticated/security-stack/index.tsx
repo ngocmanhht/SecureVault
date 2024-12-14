@@ -9,6 +9,7 @@ import { NoteType } from '../../../type/note';
 import Security from '../../../screens/authenticated/security';
 import { GeneratePassword } from '../../../screens/authenticated/generate-password';
 import PasswordHistory from '../../../screens/authenticated/password-history';
+import PasswordEvaluate from '../../../screens/authenticated/password-evaluate';
 
 const Stack = createStackNavigator();
 
@@ -53,6 +54,23 @@ export const SecurityStackNavigator = () => {
         }}
         name={Screens.PasswordHistory}
         component={PasswordHistory}
+      />
+      <Stack.Screen
+        options={{
+          headerMode: 'screen',
+          animationTypeForReplace: 'pop',
+          headerBackTitle: 'Quay lại',
+          headerTitle: 'Đánh giá mật khẩu',
+          headerBackTitleStyle: {
+            fontSize: FontSizes.content,
+          },
+          headerTitleStyle: {
+            fontSize: FontSizes.header,
+            fontFamily: 'Inter-Bold',
+          },
+        }}
+        name={Screens.PasswordEvaluate}
+        component={PasswordEvaluate}
       />
     </Stack.Navigator>
   );

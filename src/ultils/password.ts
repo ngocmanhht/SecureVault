@@ -47,4 +47,21 @@ export class PasswordUtils {
       return PasswordStrength.Strong;
     }
   };
+
+  evaluateScorePassword = (password: string) => {
+    let score = 0;
+
+    if (password.length >= 8) score += 2;
+    if (password.length >= 12) score += 2;
+
+    if (/[a-z]/.test(password)) score += 1;
+    if (/[A-Z]/.test(password)) score += 1;
+    if (/[0-9]/.test(password)) score += 1;
+    if (/[^a-zA-Z0-9]/.test(password)) score += 2;
+
+    const commonPasswords = ['123456', 'password', '123456789'];
+    if (commonPasswords.includes(password)) score -= 3;
+
+    return score;
+  };
 }
